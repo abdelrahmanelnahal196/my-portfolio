@@ -19,12 +19,12 @@
   },
   "aboutCertifications": [
     {
-      "hidden": false,
+      "hidden": true,
       "title": "ISTQB Foundation Level (FL) V4.0",
       "date": "Jun 2025"
     },
     {
-      "hidden": false,
+      "hidden": true,
       "title": "ISTQB Mobile Application Testing (MAT)",
       "date": "Sep 2025"
     }
