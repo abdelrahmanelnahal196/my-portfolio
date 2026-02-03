@@ -1,10 +1,12 @@
 // src/portfolioStore.js
+import STATIC_DATA from "./data/portfolio.json";
+
 export const STORAGE_KEY = "portfolio_dashboard_v1";
 export const SAVED_PALETTES_KEY = "portfolio_saved_palettes_v1";
 
-/* =========================================================
-   ✅ Default Schema (EMPTY by default)
-========================================================= */
+// ✅ DEFAULT_DATA now comes from a static JSON file (published with the site)
+export const DEFAULT_DATA = STATIC_DATA;
+
 /* =========================================================
    ✅ Helpers
 ========================================================= */
@@ -69,7 +71,7 @@ function normalizeEducationItem(x) {
 }
 
 function normalizeSectionsCfg(x) {
-  const def = cloneDeep(DEFAULT_DATA.siteTheme.sections);
+  const def = cloneDeep(DEFAULT_DATA?.siteTheme?.sections || { order: [], hidden: {} });
   if (!x || typeof x !== "object") return def;
 
   const order = Array.isArray(x.order) ? x.order.map((s) => cleanStr(s)).filter(Boolean) : def.order;
@@ -102,7 +104,7 @@ function migrateData(data) {
   d.siteTheme.analytics = d.siteTheme.analytics || {};
   d.siteTheme.contactForm = d.siteTheme.contactForm || {};
 
-  // ✅ NEW: sections manager config
+  // ✅ sections manager config
   d.siteTheme.sections = normalizeSectionsCfg(d.siteTheme.sections);
 
   // ✅ education
@@ -219,6 +221,11 @@ function migrateData(data) {
 /* =========================================================
    ✅ Public API
 ========================================================= */
+/**
+ * ✅ loadPortfolio:
+ * - If localStorage has data -> use it
+ * - else fallback to DEFAULT_DATA (STATIC JSON published with the site)
+ */
 export function loadPortfolio() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -243,6 +250,42 @@ export function savePortfolio(data) {
 export function resetPortfolio() {
   localStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new Event("portfolio:updated"));
+}
+
+/* =========================================================
+   ✅ Export/Import JSON FILE helpers
+   - Export: download a file (e.g., portfolio.json)
+   - Import: read JSON file and return parsed object
+========================================================= */
+export function exportPortfolioJson(data, filename = "portfolio.json") {
+  const txt = JSON.stringify(data ?? {}, null, 2);
+  const blob = new Blob([txt], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+export function importPortfolioJsonFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result || "{}"));
+        resolve(parsed);
+      } catch {
+        reject(new Error("Invalid JSON file"));
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 /* =========================================================
