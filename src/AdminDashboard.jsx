@@ -7,6 +7,8 @@ import {
   savePortfolio,
   loadSavedPalettes,
   saveSavedPalettes,
+  exportPortfolioJson,
+  importPortfolioJsonFile,
 } from "./portfolioStore";
 
 /**
@@ -844,6 +846,34 @@ export default function AdminDashboard({ onLogout }) {
   const [data, setData] = useState(() => loadInitialData());
   const [savedNote, setSavedNote] = useState("");
 
+  // ✅ Import JSON file input ref
+  const importFileRef = useRef(null);
+
+  const openImportPicker = () => importFileRef.current?.click();
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const parsed = await importPortfolioJsonFile(file);
+      // put into editor
+      setData(parsed);
+      // store as draft to avoid overwriting published accidentally
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(parsed));
+        setHasDraft(true);
+        setIsDraftLoaded(true);
+      } catch {}
+      setSavedNote("Imported file ✅ (Draft)");
+      setTimeout(() => setSavedNote(""), 1400);
+    } catch (err) {
+      setSavedNote(err?.message || "Import failed");
+      setTimeout(() => setSavedNote(""), 1600);
+    } finally {
+      e.target.value = "";
+    }
+  };
+
   // ✅ Undo stack
   const historyRef = useRef([]);
   const isUndoingRef = useRef(false);
@@ -1223,6 +1253,13 @@ export default function AdminDashboard({ onLogout }) {
     }
   };
 
+  // ✅ Export a "published" file (portfolio.json) to put into src/data/portfolio.json then commit
+  const exportPublishedFile = () => {
+    exportPortfolioJson(data, "portfolio.json");
+    setSavedNote("Exported portfolio.json ✅");
+    setTimeout(() => setSavedNote(""), 1200);
+  };
+
   /* =========================================================
      ✅ Home helpers
   ========================================================= */
@@ -1311,6 +1348,15 @@ export default function AdminDashboard({ onLogout }) {
 
   return (
     <div className="admin-root">
+      {/* hidden file input for importing json file */}
+      <input
+        ref={importFileRef}
+        type="file"
+        accept="application/json"
+        style={{ display: "none" }}
+        onChange={handleImportFile}
+      />
+
       <div className="dash-wrap">
         <header className="dash-header">
           <div className="dash-brand">
@@ -1360,6 +1406,14 @@ export default function AdminDashboard({ onLogout }) {
 
             <SmallBtn onClick={onSave} title="Save to main storage (blocked by validation)">
               Save
+            </SmallBtn>
+
+            <SmallBtn onClick={exportPublishedFile} title="Download portfolio.json to commit into src/data/portfolio.json">
+              Export Published JSON
+            </SmallBtn>
+
+            <SmallBtn onClick={openImportPicker} title="Import JSON file into dashboard (saved as Draft)">
+              Import JSON File
             </SmallBtn>
 
             <SmallBtn
@@ -1456,6 +1510,14 @@ export default function AdminDashboard({ onLogout }) {
                       ) : null}
                       <SmallBtn onClick={exportJSON}>Export JSON</SmallBtn>
                       <SmallBtn onClick={copyBackup}>Copy JSON</SmallBtn>
+
+                      {/* ✅ NEW */}
+                      <SmallBtn onClick={exportPublishedFile} title="Download portfolio.json to commit into src/data/portfolio.json">
+                        Export Published JSON
+                      </SmallBtn>
+                      <SmallBtn onClick={openImportPicker} title="Import JSON file into dashboard (saved as Draft)">
+                        Import JSON File
+                      </SmallBtn>
                     </div>
                   }
                 >
@@ -1499,6 +1561,10 @@ export default function AdminDashboard({ onLogout }) {
                     <SmallBtn variant="danger" onClick={onLogout}>
                       Logout
                     </SmallBtn>
+                  </div>
+
+                  <div className="dash-hint" style={{ marginTop: 10 }}>
+                    ✅ عشان الداتا تظهر لكل الأجهزة: اضغط <b>Export Published JSON</b> ثم خُد الملف وحطّه في <b>src/data/portfolio.json</b> واعمل commit + push.
                   </div>
                 </Card>
 
@@ -2224,11 +2290,23 @@ export default function AdminDashboard({ onLogout }) {
                     <SmallBtn variant="primary" onClick={importJSON}>
                       Import to Editor
                     </SmallBtn>
+
+                    {/* ✅ NEW */}
+                    <SmallBtn onClick={exportPublishedFile} title="Download portfolio.json to commit into src/data/portfolio.json">
+                      Export Published JSON
+                    </SmallBtn>
+                    <SmallBtn onClick={openImportPicker} title="Import JSON file into dashboard (saved as Draft)">
+                      Import JSON File
+                    </SmallBtn>
                   </div>
                 }
               >
                 <TextArea label="Paste JSON here to restore, or export current state" value={backupText} onChange={setBackupText} rows={12} placeholder='{"profile": {...}}' />
-                <div className="dash-hint">Import بيحط البيانات داخل الداشبورد فورًا (وكمان Auto-Save هيحفظها).</div>
+                <div className="dash-hint">
+                  Import بيحط البيانات داخل الداشبورد فورًا (وكمان Auto-Save هيحفظها).  
+                  <br />
+                  ✅ للنشر لكل الأجهزة: Export Published JSON → احفظه كـ <b>src/data/portfolio.json</b> → commit + push.
+                </div>
               </Card>
             )}
 
