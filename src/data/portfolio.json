@@ -1,0 +1,473 @@
+{
+  "assets": {
+    "photo": "/assets/images/profile.jpg",
+    "cv": "/assets/cv/Abdelrahman-ElNahal-CV.pdf",
+    "ogImage": "",
+    "icons": {
+      "whatsapp": "",
+      "linkedin": "",
+      "github": "",
+      "gmail": "",
+      "telegram": "",
+      "instagram": "",
+      "facebook": "",
+      "tiktok": ""
+    }
+  },
+  "profile": {
+    "name": "Abdelrahman El Nahal",
+    "title": "Software Test Engineer",
+    "location": "Cairo, Egypt",
+    "summary": "Passionate Software Tester dedicated to ensuring product quality, preventing defects early, and sharing knowledge to help teams move faster.",
+    "email": "abdelrahmanelnahal15@gmail.com",
+    "whatsapp": "+201099670702",
+    "linkedin": "https://www.linkedin.com/in/abdelrahman-elnahal/",
+    "github": "https://github.com/abdelrahmanelnahal196/",
+    "instagram": "https://www.instagram.com/abdelrahman_elnahal1/",
+    "facebook": "https://www.facebook.com/AbdelrahmanElnahal196",
+    "telegram": "https://t.me/abdelrahman_elnahal",
+    "tiktok": "https://www.tiktok.com/@abdelrahman_elnahal1"
+  },
+  "education": [],
+  "aboutCertifications": [
+    {
+      "hidden": true,
+      "title": "ISTQB Foundation Level (FL) V4.0",
+      "date": "Jun 2025"
+    },
+    {
+      "hidden": true,
+      "title": "ISTQB Mobile Application Testing (MAT)",
+      "date": "Sep 2025"
+    }
+  ],
+  "technicalSkills": [
+    {
+      "text": "Manual Testing (Web & Mobile)",
+      "hidden": false
+    },
+    {
+      "text": "API Testing (Postman)",
+      "hidden": false
+    },
+    {
+      "text": "Functional Testing",
+      "hidden": false
+    },
+    {
+      "text": "Mobile Testing (iOS & Android)",
+      "hidden": false
+    },
+    {
+      "text": "Web Testing",
+      "hidden": false
+    },
+    {
+      "text": "UAT",
+      "hidden": false
+    },
+    {
+      "text": "Regression Testing",
+      "hidden": false
+    },
+    {
+      "text": "Smoke Testing",
+      "hidden": false
+    },
+    {
+      "text": "Exploratory Testing",
+      "hidden": false
+    },
+    {
+      "text": "UI/UX Testing",
+      "hidden": false
+    },
+    {
+      "text": "SQL & Database Testing",
+      "hidden": false
+    },
+    {
+      "text": "Cross-Browser Testing",
+      "hidden": false
+    },
+    {
+      "text": "Performance Testing Basics",
+      "hidden": false
+    },
+    {
+      "text": "Test Case Design & Documentation",
+      "hidden": false
+    },
+    {
+      "text": "Bug Life Cycle Management",
+      "hidden": false
+    },
+    {
+      "text": "Defect Reporting & Tracking",
+      "hidden": false
+    },
+    {
+      "text": "SQL Basics (SSMS) – Data Validation",
+      "hidden": false
+    }
+  ],
+  "softSkills": [
+    {
+      "text": "Communication",
+      "hidden": false
+    },
+    {
+      "text": "Teamwork",
+      "hidden": false
+    },
+    {
+      "text": "Attention to Detail",
+      "hidden": false
+    },
+    {
+      "text": "Problem-Solving",
+      "hidden": false
+    },
+    {
+      "text": "Patience",
+      "hidden": false
+    },
+    {
+      "text": "Critical Thinking",
+      "hidden": false
+    },
+    {
+      "text": "Time Management",
+      "hidden": false
+    },
+    {
+      "text": "Adaptability",
+      "hidden": false
+    },
+    {
+      "text": "Continuous Learning",
+      "hidden": false
+    },
+    {
+      "text": "Collaboration",
+      "hidden": false
+    },
+    {
+      "text": "Creativity",
+      "hidden": false
+    }
+  ],
+  "businessDomains": [
+    {
+      "text": "LMS Platforms",
+      "hidden": false
+    },
+    {
+      "text": "ERP Systems",
+      "hidden": false
+    },
+    {
+      "text": "SaaS Products",
+      "hidden": false
+    },
+    {
+      "text": "Car Rental Services",
+      "hidden": false
+    },
+    {
+      "text": "E-commerce",
+      "hidden": false
+    },
+    {
+      "text": "Healthcare & Medical",
+      "hidden": false
+    },
+    {
+      "text": "AI services",
+      "hidden": false
+    }
+  ],
+  "workExperience": [
+    {
+      "hidden": false,
+      "role": "QA Test Engineer",
+      "company": "NEBU Systems",
+      "date": "Feb 2026",
+      "location": "Sheraton - Egypt",
+      "type": "Full-Time",
+      "desc": "Perform manual testing across web and mobile applications, document test cases, report defects, and validate fixes.",
+      "align": "right"
+    },
+    {
+      "hidden": false,
+      "role": "Software Testing Intern",
+      "company": "DEPI",
+      "date": "Nov 2025 – Present",
+      "location": "Hybrid",
+      "type": "4 Months",
+      "desc": "Perform manual testing across web and mobile applications, document test cases, report defects, and validate fixes.",
+      "align": "left"
+    },
+    {
+      "hidden": false,
+      "role": "Software Tester & Support",
+      "company": "7P Marketing & Software",
+      "date": "May 2025 – Present",
+      "location": "Dokki, Egypt",
+      "type": "10 Months",
+      "desc": "Manual testing on LMS modules (authentication, course management, quizzes, payments). Execute smoke/regression/UAT, and report & verify defects.",
+      "align": "right"
+    }
+  ],
+  "toolkit": [
+    {
+      "hidden": false,
+      "label": "Postman",
+      "icon": "/assets/icons/postman.png"
+    },
+    {
+      "hidden": false,
+      "label": "Jira",
+      "icon": "/assets/icons/jira.png"
+    },
+    {
+      "hidden": false,
+      "label": "Trello",
+      "icon": "/assets/icons/trello.png"
+    },
+    {
+      "hidden": false,
+      "label": "Git",
+      "icon": "/assets/icons/git.png"
+    },
+    {
+      "hidden": false,
+      "label": "GitHub",
+      "icon": "/assets/icons/github.png"
+    },
+    {
+      "hidden": false,
+      "label": "IntelliJ IDEA",
+      "icon": "/assets/icons/intellij.png"
+    },
+    {
+      "hidden": false,
+      "label": "SQL Server",
+      "icon": "/assets/icons/sqlserver.png"
+    },
+    {
+      "hidden": false,
+      "label": "C Sharp",
+      "icon": "/assets/icons/csharp.png"
+    },
+    {
+      "hidden": false,
+      "label": "Java",
+      "icon": "/assets/icons/java.png"
+    },
+    {
+      "hidden": false,
+      "label": "HTML",
+      "icon": "/assets/icons/html.png"
+    },
+    {
+      "hidden": false,
+      "label": "CSS",
+      "icon": "/assets/icons/css.png"
+    },
+    {
+      "hidden": false,
+      "label": "JavaScript",
+      "icon": "/assets/icons/js.png"
+    },
+    {
+      "hidden": false,
+      "label": "Excel",
+      "icon": "/assets/icons/excel.png"
+    },
+    {
+      "hidden": false,
+      "label": "PowerPoint",
+      "icon": "/assets/icons/powerpoint.png"
+    },
+    {
+      "hidden": false,
+      "label": "Word",
+      "icon": "/assets/icons/word.png"
+    }
+  ],
+  "projects": [
+    {
+      "title": "",
+      "desc": "",
+      "link": "",
+      "image": "",
+      "tags": [],
+      "hidden": false
+    },
+    {
+      "title": "LMS Platform Testing",
+      "desc": "Authentication, course management, quizzes, payments — smoke/regression/UAT + UI/UX feedback.",
+      "link": "",
+      "image": "",
+      "tags": [],
+      "hidden": false
+    },
+    {
+      "title": "API Testing Samples",
+      "desc": "Postman collections, positive/negative cases, and clear bug reports.",
+      "link": "",
+      "image": "",
+      "tags": [],
+      "hidden": false
+    },
+    {
+      "title": "JAW Store",
+      "desc": "Manual Testing - (Dashboard / Website / Mobile App). Test design, execution, and defect reporting.",
+      "link": "",
+      "image": "",
+      "tags": [],
+      "hidden": false
+    }
+  ],
+  "certificates": [
+    {
+      "hidden": false,
+      "title": "Software Testing Course",
+      "meta": "Udemy • 54.5 hours • Nov 25, 2025",
+      "img": "/assets/certificates/udemy-software-testing.jpg"
+    },
+    {
+      "hidden": false,
+      "title": "Introduction to Software Testing Concepts & Techniques",
+      "meta": "Mahara-Tech (ITI) • 1h 20m • 16/12/2025",
+      "img": "/assets/certificates/iti-testing-concepts.png"
+    },
+    {
+      "hidden": false,
+      "title": "Complete SQL Course",
+      "meta": "QAcart • Certificate of Completion",
+      "img": "/assets/certificates/qacart-sql.png"
+    }
+  ],
+  "contactCards": [
+    {
+      "title": "LinkedIn",
+      "button": "Visit LinkedIn",
+      "btnClass": "btn btn-glow bg-blue-500/30 hover:bg-blue-500/30 text-white",
+      "url": "https://www.linkedin.com/in/abdelrahman-elnahal/",
+      "iconUrl": "/assets/icons/linkedin.png",
+      "hidden": false
+    },
+    {
+      "title": "GitHub",
+      "button": "Visit GitHub",
+      "btnClass": "btn bg-slate-500/80 hover:bg-slate-500 text-white",
+      "url": "https://github.com/abdelrahmanelnahal196/",
+      "iconUrl": "/assets/icons/github.png",
+      "hidden": false
+    },
+    {
+      "title": "Email",
+      "button": "Send Email",
+      "btnClass": "btn btn-glow bg-red-600 hover:bg-red-600 text-white",
+      "url": "mailto:abdelrahmanelnahal15@gmail.com",
+      "iconUrl": "/assets/icons/gmail.png",
+      "hidden": false
+    },
+    {
+      "title": "WhatsApp",
+      "button": "Chat Now",
+      "btnClass": "btn btn-wa bg-emerald-600 hover:bg-emerald-600 text-white",
+      "url": "https://wa.me/201099670702",
+      "iconUrl": "/assets/icons/whatsapp.png",
+      "hidden": false
+    },
+    {
+      "title": "Instagram",
+      "button": "Visit Instagram",
+      "btnClass": "btn bg-orange-500/80 hover:bg-pink-500 text-white",
+      "url": "https://www.instagram.com/abdelrahman_elnahal1/",
+      "iconUrl": "/assets/icons/insta.png",
+      "hidden": false
+    },
+    {
+      "title": "Facebook",
+      "button": "Visit Facebook",
+      "btnClass": "btn bg-blue-500/80 hover:bg-blue-500 text-white",
+      "url": "https://www.facebook.com/AbdelrahmanElnahal196",
+      "iconUrl": "/assets/icons/facebook.png",
+      "hidden": false
+    },
+    {
+      "title": "Telegram",
+      "button": "Join Telegram",
+      "btnClass": "btn bg-blue-500/100 hover:bg-blue-500 text-white",
+      "url": "https://t.me/abdelrahman_elnahal",
+      "iconUrl": "/assets/icons/telegram.png",
+      "hidden": false
+    },
+    {
+      "title": "TikTok",
+      "button": "Visit TikTok",
+      "btnClass": "btn bg-black/80 hover:bg-black text-white",
+      "url": "https://www.tiktok.com/@abdelrahman_elnahal1",
+      "iconUrl": "/assets/icons/tiktok.png",
+      "hidden": false
+    }
+  ],
+  "floatingButtons": [],
+  "siteTheme": {
+    "palette": "ocean",
+    "custom": {
+      "accent": "#0ea5e9",
+      "accent2": "#2563eb"
+    },
+    "style": {
+      "cards": "glass",
+      "preset": "default"
+    },
+    "density": "comfortable",
+    "layout": {
+      "projects": "grid",
+      "certificates": "grid",
+      "experience": "timeline"
+    },
+    "background": {
+      "light1": "#f6fbff",
+      "light2": "#eef6ff",
+      "dark1": "#070b14",
+      "dark2": "#0a1022"
+    },
+    "avatarStyle": "circle",
+    "sections": {
+      "order": [
+        "home",
+        "about",
+        "skills",
+        "experience",
+        "projects",
+        "certificates",
+        "contact"
+      ],
+      "hidden": {}
+    },
+    "seo": {
+      "siteTitle": "",
+      "description": "",
+      "ogImage": ""
+    },
+    "analytics": {
+      "enabled": false,
+      "provider": "plausible",
+      "plausibleDomain": "",
+      "gaMeasurementId": ""
+    },
+    "contactForm": {
+      "mode": "mailto",
+      "formspreeEndpoint": "",
+      "subject": "Portfolio Contact",
+      "toEmail": "abdelrahmanelnahal15@gmail.com"
+    }
+  }
+}
