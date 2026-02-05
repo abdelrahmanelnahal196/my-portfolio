@@ -1011,6 +1011,27 @@
   /* =========================================================
     Footer icons
   ========================================================= */
+
+  /* =========================================================
+    Site footer
+  ========================================================= */
+  .site-footer{
+    padding: 40px 0 48px;
+  }
+  .footer-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    padding: 18px 18px;
+    border-radius: 20px;
+    border: 1px solid var(--stroke);
+  }
+  .footer-left{ display:flex; flex-direction:column; gap:4px; }
+  .footer-name{ font-weight: 900; letter-spacing: .3px; }
+  .footer-sub{ font-size: 13px; color: var(--text-soft); }
+  .footer-right{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
   .footer-icon{
     width: 44px;
     height: 44px;
@@ -1395,12 +1416,21 @@
   }
   @media(max-width: 980px){
     .admin-root .dash-main{ grid-template-columns: 1fr; }
-    .admin-root .dash-tabs{ display:flex; overflow:auto; gap:10px; flex-direction:row; }
+    .admin-root .dash-tabs{
+      display:flex;
+      overflow:auto;
+      gap:10px;
+      flex-direction:row;
+      position: sticky;
+      top: 8px;
+      z-index: 40;
+    }
   }
 
   /* sidebar tabs */
   .admin-root .dash-tabs{
     display:flex; flex-direction:column; gap:12px;
+    position: sticky;
     top:12px;
     align-self:start;
     padding:12px;

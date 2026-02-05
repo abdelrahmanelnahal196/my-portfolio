@@ -562,7 +562,9 @@ const FloatingButton = memo(function FloatingButton() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 250);
+    // ✅ Some browsers/devices report scroll on documentElement, so we read both.
+    const getY = () => window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    const onScroll = () => setShow(getY() > 140);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -1389,6 +1391,45 @@ const PortfolioSite = memo(function PortfolioSite() {
   });
 
   /* =========================================================
+     Footer
+  ========================================================= */
+  const Footer = memo(function Footer() {
+    const year = new Date().getFullYear();
+    return (
+      <footer className="site-footer">
+        <div className="container-max">
+          <div className="footer-inner glass">
+            <div className="footer-left">
+              <div className="footer-name">{profile.name || "Portfolio"}</div>
+              <div className="footer-sub">© {year} • All rights reserved.</div>
+            </div>
+
+            <div className="footer-right">
+              {(CONTACT || []).slice(0, 6).map((c) => (
+                <button
+                  key={c.title}
+                  type="button"
+                  className="footer-icon"
+                  title={c.title}
+                  aria-label={c.title}
+                  onClick={() => {
+                    const u = String(c.url || "");
+                    if (!u) return;
+                    if (u.startsWith("mailto:")) window.location.href = u;
+                    else openExternal(u);
+                  }}
+                >
+                  {c.iconUrl ? <img src={assetUrl(c.iconUrl)} alt={c.title} loading="lazy" /> : <span>↗</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
+  });
+
+  /* =========================================================
      ✅ Render sections in dashboard order
   ========================================================= */
   const sectionRenderers = useMemo(
@@ -1422,6 +1463,9 @@ const PortfolioSite = memo(function PortfolioSite() {
         if (!shouldRenderSection(id)) return null;
         return <React.Fragment key={id}>{render()}</React.Fragment>;
       })}
+
+      {/* ✅ Footer */}
+      {!previewOnly ? <Footer /> : null}
 
       {/* ✅ Floating Button (FIX) */}
       {!previewOnly ? <FloatingButton /> : null}

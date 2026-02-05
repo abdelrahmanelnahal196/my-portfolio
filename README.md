@@ -33,3 +33,16 @@ After the workflow finishes, your site will be available on:
 ## Notes
 - `vite.config.js` is set to `base: "./"` which works well for GitHub Pages.
 - If you ever switch to React Router (BrowserRouter), GitHub Pages may need extra handling for refresh/404.
+
+## Dashboard data sync (important)
+Edits you make in **/dashboard** are saved in **your current browser only** (localStorage). So:
+- On another device/browser → you'll see the default data.
+- To move your edits to another device (or make them the new default):
+  1) Open Dashboard → **Export JSON File**
+  2) On the other device, Dashboard → **Import JSON File**
+  3) If you want everyone to see the same data by default, copy the exported JSON into `src/data/portfolio.json` then push to GitHub.
+
+## If GitHub Pages shows: “404 There isn't a GitHub Pages site here”
+That usually means Pages isn't enabled yet or the workflow didn't deploy.
+1) Repo → **Settings → Pages → Source = GitHub Actions**
+2) Repo → **Actions** → check the latest “Deploy to GitHub Pages” run is green.
