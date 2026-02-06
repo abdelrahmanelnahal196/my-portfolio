@@ -58,6 +58,7 @@ const CONTACT_SUBTABS = [
 const LAYOUT_SUBTABS = [
   { id: "design", label: "Design" },
   { id: "theme", label: "Theme" },
+  { id: "footer", label: "Footer" },
 ];
 
 // Site sections (for Section Manager)
@@ -752,6 +753,7 @@ function buildSearchIndex(data) {
   const seo = st.seo || {};
   const analytics = st.analytics || {};
   const cf = st.contactForm || {};
+  const footerCfg = st.footer || {};
 
   // Profile
   push("Profile → Name", profile.name, { tab: "Profile" });
@@ -936,6 +938,7 @@ export default function AdminDashboard({ onLogout }) {
   const seo = st.seo || {};
   const analytics = st.analytics || {};
   const cf = st.contactForm || {};
+  const footerCfg = st.footer || {};
   const profile = data.profile || {};
   const assets = data.assets || {};
 
@@ -1024,7 +1027,16 @@ export default function AdminDashboard({ onLogout }) {
       return;
     }
 
-    savePortfolio(data);
+    const ok = savePortfolio(data);
+    if (!ok) {
+      setSavedNote("Publish failed ❌");
+      setTimeout(() => setSavedNote(""), 2000);
+      return;
+    }
+
+    // ✅ Refresh in-memory state from persisted storage
+    setData(loadPortfolio());
+
     try {
       localStorage.removeItem(DRAFT_KEY);
     } catch {}
@@ -1050,8 +1062,14 @@ export default function AdminDashboard({ onLogout }) {
       return;
     }
 
-    savePortfolio(data);
-    setSavedNote("Saved ✅");
+    const ok = savePortfolio(data);
+    if (ok) {
+      // ✅ Refresh in-memory state from persisted storage
+      setData(loadPortfolio());
+      setSavedNote("Saved ✅");
+    } else {
+      setSavedNote("Save failed ❌");
+    }
     setTimeout(() => setSavedNote(""), 1200);
   };
 
@@ -2234,6 +2252,62 @@ export default function AdminDashboard({ onLogout }) {
                     </div>
 
                     <div className="dash-hint">Saved palettes are stored in your browser localStorage and will remain available later.</div>
+                  </Card>
+                )}
+
+                {layoutSubTab === "footer" && (
+                  <Card title="Footer (Card style + Dashboard control)">
+                    <div className="dash-grid">
+                      <label className="dash-field">
+                        <div className="dash-label">Show Footer</div>
+                        <select
+                          className="dash-input"
+                          value={footerCfg.enabled === false ? "no" : "yes"}
+                          onChange={(e) => update("siteTheme.footer.enabled", e.target.value === "yes")}
+                        >
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                      </label>
+
+                      <label className="dash-field">
+                        <div className="dash-label">Tagline (optional)</div>
+                        <input
+                          className="dash-input"
+                          value={footerCfg.tagline || ""}
+                          onChange={(e) => update("siteTheme.footer.tagline", e.target.value)}
+                          placeholder="e.g., Built with React + Vite"
+                        />
+                      </label>
+
+                      <label className="dash-field">
+                        <div className="dash-label">Show Contact Icons</div>
+                        <select
+                          className="dash-input"
+                          value={footerCfg.showIcons === false ? "no" : "yes"}
+                          onChange={(e) => update("siteTheme.footer.showIcons", e.target.value === "yes")}
+                        >
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                      </label>
+
+                      <label className="dash-field">
+                        <div className="dash-label">Max Icons</div>
+                        <input
+                          className="dash-input"
+                          type="number"
+                          min="0"
+                          max="12"
+                          value={Number(footerCfg.maxIcons ?? 6)}
+                          onChange={(e) => update("siteTheme.footer.maxIcons", Math.max(0, Number(e.target.value || 0)))}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="dash-hint">
+                      Tip: Icons come from the <b>Contact</b> section cards. Add/Hide contact items there to control what appears in the footer.
+                    </div>
                   </Card>
                 )}
               </>

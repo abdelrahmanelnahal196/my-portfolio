@@ -315,5 +315,13 @@
       "iconUrl": "/assets/icons/tiktok.png",
       "btnClass": "btn bg-black/80 hover:bg-black text-white"
     }
-  ]
+  ],
+  "siteTheme": {
+    "footer": {
+      "enabled": true,
+      "tagline": "",
+      "showIcons": true,
+      "maxIcons": 6
+    }
+  }
 }

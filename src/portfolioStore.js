@@ -103,6 +103,8 @@ function migrateData(data) {
   d.siteTheme.seo = d.siteTheme.seo || {};
   d.siteTheme.analytics = d.siteTheme.analytics || {};
   d.siteTheme.contactForm = d.siteTheme.contactForm || {};
+  // ✅ footer
+  d.siteTheme.footer = d.siteTheme.footer || { enabled: true, tagline: "", showIcons: true, maxIcons: 6 };
 
   // ✅ sections manager config
   d.siteTheme.sections = normalizeSectionsCfg(d.siteTheme.sections);
@@ -243,8 +245,29 @@ export function loadPortfolio() {
 
 export function savePortfolio(data) {
   const safe = deepMerge(DEFAULT_DATA, migrateData(data));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
-  window.dispatchEvent(new Event("portfolio:updated"));
+
+  // ✅ Stamp a meta field so saves are always detectable (and helps debugging)
+  safe._meta = {
+    ...(safe._meta || {}),
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
+
+    // ✅ Verify write (some environments silently fail)
+    const roundtrip = localStorage.getItem(STORAGE_KEY);
+    if (!roundtrip) throw new Error("Storage write failed: empty read-back");
+
+    window.dispatchEvent(new Event("portfolio:updated"));
+    return true;
+  } catch (e) {
+    console.error("savePortfolio failed:", e);
+    alert(
+      "Save failed. Please clear site data (LocalStorage) and try again. If you uploaded large Base64 images, move them to /public/assets and use a path instead."
+    );
+    return false;
+  }
 }
 
 export function resetPortfolio() {

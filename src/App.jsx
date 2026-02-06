@@ -1395,34 +1395,46 @@ const PortfolioSite = memo(function PortfolioSite() {
   ========================================================= */
   const Footer = memo(function Footer() {
     const year = new Date().getFullYear();
+    const fcfg = st.footer || {};
+    if (fcfg.enabled === false) return null;
+
+    const cardClass = st.style?.cards || "glass";
+    const tagline = String(fcfg.tagline || "").trim();
+    const showIcons = fcfg.showIcons !== false;
+    const maxIcons = Math.max(0, Number(fcfg.maxIcons ?? 6)) || 0;
+
     return (
       <footer className="site-footer">
         <div className="container-max">
-          <div className="footer-inner glass">
+          <div className={`footer-inner ${cardClass}`}>
             <div className="footer-left">
               <div className="footer-name">{profile.name || "Portfolio"}</div>
-              <div className="footer-sub">© {year} • All rights reserved.</div>
+              <div className="footer-sub">
+                © {year} • {tagline ? tagline : "All rights reserved."}
+              </div>
             </div>
 
-            <div className="footer-right">
-              {(CONTACT || []).slice(0, 6).map((c) => (
-                <button
-                  key={c.title}
-                  type="button"
-                  className="footer-icon"
-                  title={c.title}
-                  aria-label={c.title}
-                  onClick={() => {
-                    const u = String(c.url || "");
-                    if (!u) return;
-                    if (u.startsWith("mailto:")) window.location.href = u;
-                    else openExternal(u);
-                  }}
-                >
-                  {c.iconUrl ? <img src={assetUrl(c.iconUrl)} alt={c.title} loading="lazy" /> : <span>↗</span>}
-                </button>
-              ))}
-            </div>
+            {showIcons ? (
+              <div className="footer-right">
+                {(CONTACT || []).slice(0, maxIcons || 0).map((c) => (
+                  <button
+                    key={c.title}
+                    type="button"
+                    className="footer-icon"
+                    title={c.title}
+                    aria-label={c.title}
+                    onClick={() => {
+                      const u = String(c.url || "");
+                      if (!u) return;
+                      if (u.startsWith("mailto:")) window.location.href = u;
+                      else openExternal(u);
+                    }}
+                  >
+                    {c.iconUrl ? <img src={assetUrl(c.iconUrl)} alt={c.title} loading="lazy" /> : <span symbol="link">↗</span>}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </footer>

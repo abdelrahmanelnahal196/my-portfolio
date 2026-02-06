@@ -475,6 +475,12 @@
       "formspreeEndpoint": "",
       "subject": "Portfolio Contact",
       "toEmail": "abdelrahmanelnahal15@gmail.com"
+    },
+    "footer": {
+      "enabled": true,
+      "tagline": "",
+      "showIcons": true,
+      "maxIcons": 6
     }
   }
 }

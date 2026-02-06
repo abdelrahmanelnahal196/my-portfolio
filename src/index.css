@@ -967,7 +967,7 @@
     position: fixed;
     right: 30px;
     bottom: 30px;
-    z-index: 60;
+    z-index: 9999;
     width: 58px;
     height: 58px;
     border-radius: 999px;
@@ -1388,6 +1388,14 @@
 
   /* header */
   .admin-root .dash-header{
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.10));
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 18px;
+    padding: 12px 12px;
     display:flex;
     flex-wrap:wrap;
     gap:14px;
@@ -1398,7 +1406,9 @@
   .admin-root .dash-title{ font-size:22px; font-weight:900; color: var(--dash-text); }
   .admin-root .dash-sub{ font-size:13px; color: var(--dash-text-soft); margin-top:4px; }
 
-  .admin-root .dash-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .admin-root .dash-actions{ display:flex; gap:10px; flex-wrap:nowrap; align-items:center; overflow-x:auto; max-width:100%; padding-bottom:2px; }
+  .admin-root .dash-actions::-webkit-scrollbar{ height:8px; }
+  .admin-root .dash-actions::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius:999px; }
   .admin-root .dash-saved{
     font-size:12px;
     font-weight:900;
