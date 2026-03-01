@@ -28,7 +28,7 @@ const TABS = [
   "Home",
   "Profile",
   "Academic",
-  "Expertise & Toolkit",
+  "Expertise & Toolkit", // ✅ NEW MAIN TAB
   "Career",
   "Contact",
   "Sections",
@@ -43,6 +43,7 @@ const ACADEMIC_SUBTABS = [
   { id: "skills", label: "Skills" },
 ];
 
+// ✅ Career no longer contains toolkit
 const CAREER_SUBTABS = [
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
@@ -170,26 +171,6 @@ function setByPath(obj, path, value) {
     cur = cur[k];
   }
   cur[parts[parts.length - 1]] = value;
-}
-
-function getInitialEditorState() {
-  try {
-    const rawDraft = localStorage.getItem(DRAFT_KEY);
-    if (rawDraft) {
-      const parsedDraft = JSON.parse(rawDraft);
-      return {
-        data: parsedDraft,
-        isDraftLoaded: true,
-        hasDraft: true,
-      };
-    }
-  } catch {}
-
-  return {
-    data: loadPortfolio(),
-    isDraftLoaded: false,
-    hasDraft: false,
-  };
 }
 
 /* =========================================================
@@ -668,6 +649,7 @@ function tabToPreviewSection(tab, academicSubTab, careerSubTab) {
     case "Academic":
       return "about";
 
+    // ✅ NEW: Toolkit tab maps to "skills" section
     case "Expertise & Toolkit":
       return "skills";
 
@@ -771,6 +753,7 @@ function buildSearchIndex(data) {
   const seo = st.seo || {};
   const analytics = st.analytics || {};
   const cf = st.contactForm || {};
+  const footerCfg = st.footer || {};
 
   // Profile
   push("Profile → Name", profile.name, { tab: "Profile" });
@@ -844,11 +827,25 @@ export default function AdminDashboard({ onLogout }) {
   const [careerSubTab, setCareerSubTab] = useState(initialCareerSub);
   const [contactSubTab, setContactSubTab] = useState(initialUi?.contactSubTab || "cards");
 
-  // ✅ Safe initial state (NO state updates during render)
-  const initialEditorState = useMemo(() => getInitialEditorState(), []);
-  const [isDraftLoaded, setIsDraftLoaded] = useState(initialEditorState.isDraftLoaded);
-  const [hasDraft, setHasDraft] = useState(initialEditorState.hasDraft);
-  const [data, setData] = useState(() => initialEditorState.data);
+  // ✅ Draft/Publish state
+  const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+
+  const loadInitialData = () => {
+    try {
+      const rawDraft = localStorage.getItem(DRAFT_KEY);
+      if (rawDraft) {
+        setIsDraftLoaded(true);
+        setHasDraft(true);
+        return JSON.parse(rawDraft);
+      }
+    } catch {}
+    setIsDraftLoaded(false);
+    setHasDraft(false);
+    return loadPortfolio();
+  };
+
+  const [data, setData] = useState(() => loadInitialData());
   const [savedNote, setSavedNote] = useState("");
 
   // ✅ Import JSON file input ref
@@ -861,14 +858,14 @@ export default function AdminDashboard({ onLogout }) {
     if (!file) return;
     try {
       const parsed = await importPortfolioJsonFile(file);
+      // put into editor
       setData(parsed);
-
+      // store as draft to avoid overwriting published accidentally
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(parsed));
         setHasDraft(true);
         setIsDraftLoaded(true);
       } catch {}
-
       setSavedNote("Imported file ✅ (Draft)");
       setTimeout(() => setSavedNote(""), 1400);
     } catch (err) {
@@ -908,6 +905,11 @@ export default function AdminDashboard({ onLogout }) {
   // Global search
   const [searchQ, setSearchQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    setData(loadInitialData());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     try {
@@ -1015,7 +1017,7 @@ export default function AdminDashboard({ onLogout }) {
       setSavedNote(`Fix: ${issues[0].msg}`);
       setTimeout(() => setSavedNote(""), 2400);
       const key = issues[0].key;
-      if (key.startsWith("profile.") || key.startsWith("assets.")) setTab("Profile");
+      if (key.startsWith("profile.")) setTab("Profile");
       else if (key.startsWith("siteTheme.seo.")) setTab("SEO Settings");
       else if (key.startsWith("siteTheme.analytics.")) setTab("Analytics");
       else if (key.startsWith("siteTheme.contactForm.")) {
@@ -1050,7 +1052,7 @@ export default function AdminDashboard({ onLogout }) {
       setSavedNote(`Fix: ${issues[0].msg}`);
       setTimeout(() => setSavedNote(""), 2400);
       const key = issues[0].key;
-      if (key.startsWith("profile.") || key.startsWith("assets.")) setTab("Profile");
+      if (key.startsWith("profile.")) setTab("Profile");
       else if (key.startsWith("siteTheme.seo.")) setTab("SEO Settings");
       else if (key.startsWith("siteTheme.analytics.")) setTab("Analytics");
       else if (key.startsWith("siteTheme.contactForm.")) {
@@ -1062,6 +1064,7 @@ export default function AdminDashboard({ onLogout }) {
 
     const ok = savePortfolio(data);
     if (ok) {
+      // ✅ Refresh in-memory state from persisted storage
       setData(loadPortfolio());
       setSavedNote("Saved ✅");
     } else {
@@ -1240,13 +1243,6 @@ export default function AdminDashboard({ onLogout }) {
     try {
       const parsed = JSON.parse(backupText);
       commit(() => parsed);
-
-      try {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(parsed));
-        setHasDraft(true);
-        setIsDraftLoaded(true);
-      } catch {}
-
       setSavedNote("Imported ✅");
       setTimeout(() => setSavedNote(""), 1400);
     } catch {
@@ -1533,6 +1529,7 @@ export default function AdminDashboard({ onLogout }) {
                       <SmallBtn onClick={exportJSON}>Export JSON</SmallBtn>
                       <SmallBtn onClick={copyBackup}>Copy JSON</SmallBtn>
 
+                      {/* ✅ NEW */}
                       <SmallBtn onClick={exportPublishedFile} title="Download portfolio.json to commit into src/data/portfolio.json">
                         Export Published JSON
                       </SmallBtn>
@@ -1558,6 +1555,7 @@ export default function AdminDashboard({ onLogout }) {
                     <SmallBtn onClick={() => goAcademic("education")}>Go: Academic → Education</SmallBtn>
                     <SmallBtn onClick={() => goAcademic("skills")}>Go: Academic → Skills</SmallBtn>
 
+                    {/* ✅ NEW */}
                     <SmallBtn onClick={goToolkit}>Go: Expertise & Toolkit</SmallBtn>
 
                     <SmallBtn onClick={() => goCareer("experience")}>Go: Career → Experience</SmallBtn>
@@ -1815,7 +1813,7 @@ export default function AdminDashboard({ onLogout }) {
               </>
             )}
 
-            {/* ========================= Expertise & Toolkit ========================= */}
+            {/* ========================= Expertise & Toolkit (NEW MAIN TAB) ========================= */}
             {tab === "Expertise & Toolkit" && (
               <ListEditor
                 title="Expertise & Toolkit (Logos Slider)"
@@ -2367,6 +2365,7 @@ export default function AdminDashboard({ onLogout }) {
                       Import to Editor
                     </SmallBtn>
 
+                    {/* ✅ NEW */}
                     <SmallBtn onClick={exportPublishedFile} title="Download portfolio.json to commit into src/data/portfolio.json">
                       Export Published JSON
                     </SmallBtn>
@@ -2378,14 +2377,14 @@ export default function AdminDashboard({ onLogout }) {
               >
                 <TextArea label="Paste JSON here to restore, or export current state" value={backupText} onChange={setBackupText} rows={12} placeholder='{"profile": {...}}' />
                 <div className="dash-hint">
-                  Import بيحط البيانات داخل الداشبورد فورًا (وكمان Auto-Save هيحفظها).
+                  Import بيحط البيانات داخل الداشبورد فورًا (وكمان Auto-Save هيحفظها).  
                   <br />
                   ✅ للنشر لكل الأجهزة: Export Published JSON → احفظه كـ <b>src/data/portfolio.json</b> → commit + push.
                 </div>
               </Card>
             )}
 
-            {/* ========================= Sections ========================= */}
+            {/* ========================= Sections (Section Manager) ========================= */}
             {tab === "Sections" && (
               <Card
                 title="Section Manager (Order + Hide/Show) ✅ Drag & Drop fixed"
@@ -2457,7 +2456,7 @@ export default function AdminDashboard({ onLogout }) {
               </Card>
             )}
 
-            {/* Draft controls */}
+            {/* Draft controls (small tip) */}
             {hasDraft || isDraftLoaded ? (
               <Card title="Draft Mode">
                 <div className="dash-empty">

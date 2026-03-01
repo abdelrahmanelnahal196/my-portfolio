@@ -49,11 +49,14 @@ function deepMerge(fallback, incoming) {
   return incoming !== undefined ? incoming : cloneDeep(fallback);
 }
 
+<<<<<<< HEAD
 function buildSafePortfolio(data) {
   const migrated = migrateData(data);
   return deepMerge(DEFAULT_DATA, migrated);
 }
 
+=======
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 /* =========================================================
    ✅ Migration / Normalization
 ========================================================= */
@@ -115,6 +118,7 @@ function migrateData(data) {
   d.siteTheme.sections = normalizeSectionsCfg(d.siteTheme.sections);
 
   // ✅ education
+<<<<<<< HEAD
   if (Array.isArray(d.education)) {
     d.education = d.education.map(normalizeEducationItem).filter((x) => x.degree || x.institution);
   } else {
@@ -139,6 +143,21 @@ function migrateData(data) {
   } else {
     d.businessDomains = [];
   }
+=======
+  if (Array.isArray(d.education))
+    d.education = d.education.map(normalizeEducationItem).filter((x) => x.degree || x.institution);
+  else d.education = [];
+
+  // normalize skill arrays to objects {text, hidden}
+  if (Array.isArray(d.technicalSkills)) d.technicalSkills = d.technicalSkills.map(normalizeTextItem).filter((x) => x.text);
+  else d.technicalSkills = [];
+
+  if (Array.isArray(d.softSkills)) d.softSkills = d.softSkills.map(normalizeTextItem).filter((x) => x.text);
+  else d.softSkills = [];
+
+  if (Array.isArray(d.businessDomains)) d.businessDomains = d.businessDomains.map(normalizeTextItem).filter((x) => x.text);
+  else d.businessDomains = [];
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
   // normalize projects tags + hidden
   if (Array.isArray(d.projects)) {
@@ -148,6 +167,7 @@ function migrateData(data) {
         const tags = Array.isArray(p.tags)
           ? p.tags.filter(Boolean).map((t) => String(t).trim()).filter(Boolean)
           : typeof p.tags === "string"
+<<<<<<< HEAD
             ? p.tags.split(",").map((t) => t.trim()).filter(Boolean)
             : [];
         return { ...p, tags, hidden: !!p.hidden };
@@ -156,6 +176,14 @@ function migrateData(data) {
   } else {
     d.projects = [];
   }
+=======
+          ? p.tags.split(",").map((t) => t.trim()).filter(Boolean)
+          : [];
+        return { ...p, tags, hidden: !!p.hidden };
+      })
+      .filter(Boolean);
+  } else d.projects = [];
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
   // floating buttons compat (supports old fields + new optional button/btnClass)
   if (Array.isArray(d.floatingButtons)) {
@@ -173,9 +201,13 @@ function migrateData(data) {
         };
       })
       .filter((b) => b && (b.title || b.url));
+<<<<<<< HEAD
   } else {
     d.floatingButtons = [];
   }
+=======
+  } else d.floatingButtons = [];
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
   // contact cards compat
   if (Array.isArray(d.contactCards)) {
@@ -192,6 +224,7 @@ function migrateData(data) {
         };
       })
       .filter((c) => c && (c.title || c.url));
+<<<<<<< HEAD
   } else {
     d.contactCards = [];
   }
@@ -220,6 +253,23 @@ function migrateData(data) {
   } else {
     d.aboutCertifications = [];
   }
+=======
+  } else d.contactCards = [];
+
+  // other lists with hidden
+  if (Array.isArray(d.certificates)) d.certificates = d.certificates.map((c) => (c ? { ...c, hidden: !!c.hidden } : c)).filter(Boolean);
+  else d.certificates = [];
+
+  if (Array.isArray(d.workExperience)) d.workExperience = d.workExperience.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
+  else d.workExperience = [];
+
+  if (Array.isArray(d.toolkit)) d.toolkit = d.toolkit.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
+  else d.toolkit = [];
+
+  if (Array.isArray(d.aboutCertifications))
+    d.aboutCertifications = d.aboutCertifications.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
+  else d.aboutCertifications = [];
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
   // ✅ Fix/normalize some key strings (safe, no breaking)
   d.profile.email = cleanStr(d.profile.email);
@@ -260,11 +310,15 @@ function migrateData(data) {
  * ✅ loadPortfolio:
  * - If localStorage has data -> use it
  * - else fallback to DEFAULT_DATA (STATIC JSON published with the site)
+<<<<<<< HEAD
  * - Always normalize, even for default JSON
+=======
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
  */
 export function loadPortfolio() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
+<<<<<<< HEAD
     if (!raw) return buildSafePortfolio(DEFAULT_DATA);
 
     const parsed = JSON.parse(raw);
@@ -273,11 +327,26 @@ export function loadPortfolio() {
     return buildSafePortfolio(parsed);
   } catch {
     return buildSafePortfolio(DEFAULT_DATA);
+=======
+    if (!raw) return cloneDeep(DEFAULT_DATA);
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return cloneDeep(DEFAULT_DATA);
+
+    const migrated = migrateData(parsed);
+    return deepMerge(DEFAULT_DATA, migrated);
+  } catch {
+    return cloneDeep(DEFAULT_DATA);
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
   }
 }
 
 export function savePortfolio(data) {
+<<<<<<< HEAD
   const safe = buildSafePortfolio(data);
+=======
+  const safe = deepMerge(DEFAULT_DATA, migrateData(data));
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
   // ✅ Stamp a meta field so saves are always detectable (and helps debugging)
   safe._meta = {
@@ -304,9 +373,13 @@ export function savePortfolio(data) {
 }
 
 export function resetPortfolio() {
+<<<<<<< HEAD
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {}
+=======
+  localStorage.removeItem(STORAGE_KEY);
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
   window.dispatchEvent(new Event("portfolio:updated"));
 }
 
@@ -367,6 +440,7 @@ export function loadSavedPalettes() {
 }
 
 export function saveSavedPalettes(palettes) {
+<<<<<<< HEAD
   try {
     const safe = Array.isArray(palettes) ? palettes : [];
     localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(safe));
@@ -377,3 +451,9 @@ export function saveSavedPalettes(palettes) {
     return false;
   }
 }
+=======
+  const safe = Array.isArray(palettes) ? palettes : [];
+  localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(safe));
+  window.dispatchEvent(new Event("portfolio:palettes-updated"));
+}
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177

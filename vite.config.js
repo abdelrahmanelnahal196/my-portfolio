@@ -12,4 +12,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   base: "./",
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177

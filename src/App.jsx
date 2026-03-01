@@ -1395,10 +1395,17 @@ const PortfolioSite = memo(function PortfolioSite() {
   ========================================================= */
   const Footer = memo(function Footer() {
     const year = new Date().getFullYear();
+<<<<<<< HEAD
     const fcfg = siteTheme?.footer || {};
     if (fcfg.enabled === false) return null;
 
     const cardClass = siteTheme?.style?.cards || "glass";
+=======
+    const fcfg = st.footer || {};
+    if (fcfg.enabled === false) return null;
+
+    const cardClass = st.style?.cards || "glass";
+>>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
     const tagline = String(fcfg.tagline || "").trim();
     const showIcons = fcfg.showIcons !== false;
     const maxIcons = Math.max(0, Number(fcfg.maxIcons ?? 6)) || 0;
