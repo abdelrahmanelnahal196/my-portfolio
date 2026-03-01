@@ -31,8 +31,4 @@
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"
   }
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
+} 
