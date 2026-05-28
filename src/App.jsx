@@ -815,7 +815,7 @@ const PortfolioSite = memo(function PortfolioSite() {
           </div>
         )}
 
-        <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 ${GAP}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${GAP}`}>
           {filteredProjects.map((p, idx) => {
             const tools = splitTags(p.tools);
             const bullets = splitTags(p.bullets);
@@ -826,11 +826,11 @@ const PortfolioSite = memo(function PortfolioSite() {
             return (
               <article
                 key={`${p.title}-${idx}`}
-                className="project-list-card glass glow-card overflow-hidden"
+                className="project-list-card glass glow-card rounded-2xl overflow-hidden"
               >
-                <div className="flex h-full flex-col">
+                <div className="flex gap-4 p-4">
                   <a
-                    className="project-list-thumb relative block overflow-hidden border-b border-[var(--stroke)] bg-white/5"
+                    className="project-list-thumb relative shrink-0 overflow-hidden border border-[var(--stroke)] bg-white/5"
                     href={detailsHref}
                   >
                     <img
@@ -841,14 +841,11 @@ const PortfolioSite = memo(function PortfolioSite() {
                     />
                   </a>
 
-                  <div className="project-list-body min-w-0 flex-1">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      {p.category && <span className="text-xs font-bold text-[color:var(--accent)]">{p.category}</span>}
-                      {p.date && <span className="cert-meta mt-0">{p.date}</span>}
-                      {featured && <span className="cert-meta mt-0">Featured</span>}
-                    </div>
-
+                  <div className="min-w-0 flex-1">
                     <h3 className="project-list-title">{p.title}</h3>
+                    <p className="mt-1 text-sm text-[color:var(--text-soft)]">
+                      {[p.category, p.date, featured ? "Featured" : ""].filter(Boolean).join(" • ")}
+                    </p>
 
                     {description && <p className="project-list-desc">{description}</p>}
 
@@ -863,26 +860,16 @@ const PortfolioSite = memo(function PortfolioSite() {
                       </ul>
                     )}
 
-                    {tools.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {tools.slice(0, 4).map((tool) => (
-                          <span key={tool} className="chip text-xs font-bold">
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="mt-auto pt-4 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-3">
                       <a
-                        className="inline-flex rounded-xl bg-white/10 border border-[var(--stroke)] px-3 py-2 text-sm font-bold text-[color:var(--accent)] focus-ring"
+                        className="text-sm font-bold text-[color:var(--accent)] focus-ring"
                         href={detailsHref}
                       >
                         View Details
                       </a>
                       {p.link && (
                         <button
-                          className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
+                          className="text-sm font-bold text-[color:var(--accent)] focus-ring"
                           onClick={() => openExternal(p.link)}
                         >
                           View
@@ -890,7 +877,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.github && (
                         <button
-                          className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                          className="text-sm font-bold text-[color:var(--accent)] focus-ring"
                           onClick={() => openExternal(p.github)}
                         >
                           GitHub
@@ -898,7 +885,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.report && (
                         <button
-                          className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                          className="text-sm font-bold text-[color:var(--accent)] focus-ring"
                           onClick={() => openExternal(assetUrl(p.report))}
                         >
                           Report
