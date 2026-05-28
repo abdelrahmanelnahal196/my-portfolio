@@ -776,7 +776,6 @@ const PortfolioSite = memo(function PortfolioSite() {
     const [activeFilter, setActiveFilter] = useState("All");
     const filteredProjects =
       activeFilter === "All" ? PROJECTS : PROJECTS.filter((project) => project.category === activeFilter);
-    const sliderProjects = filteredProjects.length > 0 ? [...filteredProjects, ...filteredProjects] : [];
 
     return (
       <Section
@@ -804,13 +803,8 @@ const PortfolioSite = memo(function PortfolioSite() {
           </div>
         )}
 
-        <div className="project-slider" aria-label="Projects auto slider">
-          <div className="project-fade left" />
-          <div className="project-fade right" />
-
-          <div className="project-slider-window">
-            <div className="project-slider-track">
-              {sliderProjects.map((p, idx) => {
+        <div className={`project-card-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 ${GAP}`}>
+          {filteredProjects.map((p, idx) => {
             const tools = splitTags(p.tools);
             const bullets = splitTags(p.bullets);
             const description = firstValue(p.desc, p.subtitle, bullets[0]);
@@ -819,37 +813,37 @@ const PortfolioSite = memo(function PortfolioSite() {
             return (
               <article
                 key={`${p.title}-${idx}`}
-                    className="project-slider-card glass glow-card overflow-hidden"
+                className="project-compact-card glass glow-card overflow-hidden"
               >
-                    <div className="relative border-b border-[var(--stroke)]">
+                <div className="relative border-b border-[var(--stroke)]">
                     <img
                       src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
                       alt={p.title}
-                        className="project-slider-image"
+                    className="project-compact-image"
                       loading="lazy"
                     />
                     {p.category && (
-                        <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
+                    <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
                         {p.category}
                       </span>
                     )}
                   </div>
 
-                    <div className="project-slider-body">
-                      <div className="flex items-start justify-between gap-2">
+                <div className="project-compact-body">
+                  <div className="flex items-start justify-between gap-2">
                       <div>
-                          <h3 className="project-slider-title">{p.title}</h3>
+                      <h3 className="project-compact-title">{p.title}</h3>
                         {p.date && <p className="mt-1 text-xs font-bold text-[color:var(--accent)]">{p.date}</p>}
                       </div>
                       {featured && (
-                          <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
+                      <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
                           Featured
                         </span>
                       )}
                     </div>
 
                     {description && (
-                        <p className="project-slider-desc">{description}</p>
+                    <p className="project-compact-desc">{description}</p>
                     )}
 
                     {bullets.length > 1 && (
@@ -864,8 +858,8 @@ const PortfolioSite = memo(function PortfolioSite() {
                     )}
 
                     {tools.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-1.5">
-                          {tools.slice(0, 4).map((tool) => (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {tools.slice(0, 4).map((tool) => (
                           <span key={tool} className="chip text-xs font-bold">
                             {tool}
                           </span>
@@ -873,10 +867,10 @@ const PortfolioSite = memo(function PortfolioSite() {
                       </div>
                     )}
 
-                      <div className="mt-auto pt-4 flex flex-wrap gap-2">
+                  <div className="mt-auto pt-4 flex flex-wrap gap-2">
                       {p.link && (
                         <button
-                            className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
+                        className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
                           onClick={() => openExternal(p.link)}
                         >
                           View
@@ -884,7 +878,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.github && (
                         <button
-                            className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                        className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(p.github)}
                         >
                           GitHub
@@ -892,7 +886,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.report && (
                         <button
-                            className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                        className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(assetUrl(p.report))}
                         >
                           Report
@@ -902,9 +896,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                   </div>
               </article>
             );
-              })}
-            </div>
-          </div>
+          })}
         </div>
       </Section>
     );
