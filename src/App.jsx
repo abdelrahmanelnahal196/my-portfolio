@@ -154,6 +154,18 @@ function splitTags(value) {
     .filter(Boolean);
 }
 
+function slugify(value) {
+  return String(value || "project")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "project";
+}
+
+function projectSlug(project, index = 0) {
+  return `${slugify(project?.title)}-${index + 1}`;
+}
+
 function uniqueValues(items, getter) {
   return [...new Set(items.map(getter).map((item) => String(item || "").trim()).filter(Boolean))];
 }
@@ -803,29 +815,33 @@ const PortfolioSite = memo(function PortfolioSite() {
           </div>
         )}
 
-        <div className={`grid grid-cols-1 md:grid-cols-2 ${GAP}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 ${GAP}`}>
           {filteredProjects.map((p, idx) => {
             const tools = splitTags(p.tools);
             const bullets = splitTags(p.bullets);
             const description = firstValue(p.desc, p.subtitle, bullets[0]);
             const featured = p.featured;
+            const detailsHref = withBase(`projects/${projectSlug(p, PROJECTS.indexOf(p))}`);
 
             return (
               <article
                 key={`${p.title}-${idx}`}
                 className="project-list-card glass glow-card overflow-hidden"
               >
-                <div className="flex gap-4 p-4">
-                  <div className="project-list-thumb relative shrink-0 overflow-hidden border border-[var(--stroke)] bg-white/5">
+                <div className="flex h-full flex-col">
+                  <a
+                    className="project-list-thumb relative block overflow-hidden border-b border-[var(--stroke)] bg-white/5"
+                    href={detailsHref}
+                  >
                     <img
                       src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
                       alt={p.title}
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />
-                  </div>
+                  </a>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="project-list-body min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <h3 className="project-list-title">{p.title}</h3>
@@ -861,6 +877,12 @@ const PortfolioSite = memo(function PortfolioSite() {
                     )}
 
                     <div className="mt-4 flex flex-wrap gap-2">
+                      <a
+                        className="inline-flex rounded-xl bg-white/10 border border-[var(--stroke)] px-3 py-2 text-xs font-bold text-[color:var(--accent)] focus-ring"
+                        href={detailsHref}
+                      >
+                        View Details
+                      </a>
                       {p.link && (
                         <button
                           className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
@@ -1157,6 +1179,158 @@ const PortfolioSite = memo(function PortfolioSite() {
   );
 });
 
+const ProjectDetailsPage = memo(function ProjectDetailsPage({ slug }) {
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), [setTheme]);
+  const [data, setData] = useState(() => loadPortfolio());
+
+  useEffect(() => {
+    const onUpdate = () => setData(loadPortfolio());
+    window.addEventListener("portfolio:updated", onUpdate);
+    return () => window.removeEventListener("portfolio:updated", onUpdate);
+  }, []);
+
+  const siteTheme = data?.siteTheme || {};
+  useLayoutEffect(() => {
+    applyPalette(siteTheme?.palette || "ocean", siteTheme?.custom);
+    applyStylePreset(siteTheme?.style?.preset || "default");
+  }, [
+    siteTheme?.palette,
+    siteTheme?.custom?.accent,
+    siteTheme?.custom?.accent2,
+    siteTheme?.style?.preset,
+  ]);
+
+  const isRemoteOrData = useCallback((p) => {
+    const s = String(p || "").trim();
+    return s.startsWith("data:") || s.startsWith("http://") || s.startsWith("https://");
+  }, []);
+
+  const assetUrl = useCallback(
+    (p) => {
+      if (!p) return "";
+      const s = String(p).trim();
+      if (!s) return "";
+      if (isRemoteOrData(s)) return s;
+      return `${BASE}${s.replace(/^\/+/, "")}`;
+    },
+    [isRemoteOrData]
+  );
+
+  const projects = (data.projects || []).filter((project) => !project?.hidden && (project?.title || project?.desc));
+  const project = projects.find((item, index) => projectSlug(item, index) === slug);
+  const profile = data.profile || {};
+
+  const placeholderImg = (title) =>
+    `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='750'%3E%3Crect width='100%25' height='100%25' fill='%23070b14'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-family='Arial' font-size='44' font-weight='700' text-anchor='middle' dominant-baseline='middle'%3E${encodeURIComponent(
+      title || "Project"
+    )}%3C/text%3E%3C/svg%3E`;
+
+  if (!project) {
+    return (
+      <div className="min-h-screen relative">
+        <BackgroundDecor />
+        <Navbar theme={theme} onToggleTheme={toggleTheme} profile={profile} />
+        <main className="section">
+          <div className="container-max">
+            <div className="glass rounded-2xl p-8 text-center">
+              <h1 className="section-title">Project Not Found</h1>
+              <p className="mt-3 text-[color:var(--text-soft)]">This project link is no longer available.</p>
+              <a className="btn mt-6 inline-flex rounded-xl bg-[color:var(--accent)] px-5 py-3 font-bold text-white" href={withBase("#projects")}>
+                Back to Projects
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const tools = splitTags(project.tools);
+  const bullets = splitTags(project.bullets);
+  const description = firstValue(project.desc, project.subtitle, bullets[0]);
+
+  return (
+    <div className="min-h-screen relative">
+      <BackgroundDecor />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} profile={profile} />
+      <main className="section">
+        <div className="container-max">
+          <a className="inline-flex text-sm font-bold text-[color:var(--accent)]" href={withBase("#projects")}>
+            Back to Projects
+          </a>
+
+          <article className="glass rounded-2xl overflow-hidden mt-5">
+            <img
+              src={project.image ? assetUrl(project.image) : placeholderImg(project.title)}
+              alt={project.title}
+              className="w-full max-h-[420px] object-cover border-b border-[var(--stroke)]"
+            />
+
+            <div className="p-6 md:p-8">
+              <div className="flex flex-wrap items-center gap-2">
+                {project.category && <span className="chip text-xs font-bold">{project.category}</span>}
+                {project.date && <span className="chip text-xs font-bold">{project.date}</span>}
+                {project.featured && <span className="chip text-xs font-bold">Featured</span>}
+              </div>
+
+              <h1 className="mt-5 text-3xl md:text-5xl font-black leading-tight text-[color:var(--accent)]">
+                {project.title}
+              </h1>
+
+              {description && (
+                <p className="mt-5 max-w-4xl text-[color:var(--text-soft)] leading-relaxed">{description}</p>
+              )}
+
+              {tools.length > 0 && (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {tools.map((tool) => (
+                    <span key={tool} className="chip text-sm font-bold">
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {bullets.length > 0 && (
+                <div className="mt-8">
+                  <h2 className="card-title">Project Details</h2>
+                  <ul className="mt-4 grid gap-3 text-[color:var(--text-soft)]">
+                    {bullets.map((bullet) => (
+                      <li key={bullet} className="flex gap-3">
+                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[color:var(--accent)]" />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                {project.link && (
+                  <button className="btn rounded-xl bg-[color:var(--accent)] px-5 py-3 font-bold text-white" onClick={() => openExternal(project.link)}>
+                    View Project
+                  </button>
+                )}
+                {project.github && (
+                  <button className="btn glass rounded-xl px-5 py-3 font-bold" onClick={() => openExternal(project.github)}>
+                    GitHub
+                  </button>
+                )}
+                {project.report && (
+                  <button className="btn glass rounded-xl px-5 py-3 font-bold" onClick={() => openExternal(assetUrl(project.report))}>
+                    Report
+                  </button>
+                )}
+              </div>
+            </div>
+          </article>
+        </div>
+      </main>
+    </div>
+  );
+});
+
 /* =========================================================
    ✅ Admin Gate UI
 ========================================================= */
@@ -1259,6 +1433,9 @@ export default function App() {
   const basePath = new URL(BASE, window.location.origin).pathname.replace(/\/+$/, "");
   const routePath = path.replace(basePath, "").replace(/\/+$/, "") || "/";
   const isAdmin = routePath === "/app" || routePath === "/admin" || routePath === "/master";
+  const projectMatch = routePath.match(/^\/projects\/([^/]+)$/);
 
-  return isAdmin ? <AdminGate /> : <PortfolioSite />;
+  if (isAdmin) return <AdminGate />;
+  if (projectMatch) return <ProjectDetailsPage slug={decodeURIComponent(projectMatch[1])} />;
+  return <PortfolioSite />;
 }
