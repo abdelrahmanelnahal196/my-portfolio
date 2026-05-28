@@ -155,6 +155,18 @@ function absoluteUrl(path) {
   return new URL(path, window.location.origin).href;
 }
 
+function tagsToText(value) {
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value || "");
+}
+
+function textToTags(value) {
+  return String(value || "")
+    .split(/[,|]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 async function copyText(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -215,6 +227,20 @@ function Select({ value, onChange, options }) {
         </option>
       ))}
     </select>
+  );
+}
+
+function ToggleField({ checked, onChange, label }) {
+  return (
+    <label className="dashboard-list-row rounded-xl px-4 py-3 flex items-center justify-between gap-4 cursor-pointer">
+      <span className="dashboard-label text-sm font-semibold mb-0">{label}</span>
+      <input
+        type="checkbox"
+        checked={!!checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-5 w-5 accent-[color:var(--accent)]"
+      />
+    </label>
   );
 }
 
@@ -1237,11 +1263,16 @@ export default function AdminDashboard({ onLogout }) {
               columns
               createNew={() => ({
                 title: "Project Title",
-                subtitle: "",
+                desc: "",
+                category: "Manual Testing",
+                tools: [],
                 date: "",
                 image: "",
                 bullets: [],
                 link: "",
+                github: "",
+                report: "",
+                featured: false,
                 hidden: false,
               })}
               renderItem={(item, idx, patch) => (
@@ -1250,16 +1281,32 @@ export default function AdminDashboard({ onLogout }) {
                     <Field label="Title">
                       <TextInput value={item.title || ""} onChange={(e) => patch({ title: e.target.value })} />
                     </Field>
-                    <Field label="Subtitle">
-                      <TextInput value={item.subtitle || ""} onChange={(e) => patch({ subtitle: e.target.value })} />
+                    <Field label="Category / Filter">
+                      <TextInput
+                        value={item.category || ""}
+                        onChange={(e) => patch({ category: e.target.value })}
+                        placeholder="Manual Testing, API, Automation..."
+                      />
                     </Field>
                     <Field label="Date">
                       <TextInput value={item.date || ""} onChange={(e) => patch({ date: e.target.value })} />
                     </Field>
-                    <Field label="Link (optional)">
-                      <TextInput value={item.link || ""} onChange={(e) => patch({ link: e.target.value })} />
+                    <Field label="Tools (comma separated)">
+                      <TextInput
+                        value={tagsToText(item.tools)}
+                        onChange={(e) => patch({ tools: textToTags(e.target.value) })}
+                        placeholder="Postman, Jira, SQL"
+                      />
                     </Field>
                   </div>
+
+                  <Field label="Short Summary">
+                    <TextArea
+                      value={item.desc || item.subtitle || ""}
+                      onChange={(e) => patch({ desc: e.target.value, subtitle: "" })}
+                      placeholder="A short project summary shown on the card..."
+                    />
+                  </Field>
 
                   <Field label="Image (path or upload)">
                     <UploadRow value={item.image || ""} onChange={(v) => patch({ image: v })} accept="image/*" />
@@ -1268,6 +1315,23 @@ export default function AdminDashboard({ onLogout }) {
                   <Field label="Bullets">
                     <BulletsEditor value={item.bullets} onChange={(v) => patch({ bullets: v })} />
                   </Field>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <Field label="Project Link">
+                      <TextInput value={item.link || ""} onChange={(e) => patch({ link: e.target.value })} />
+                    </Field>
+                    <Field label="GitHub Link">
+                      <TextInput value={item.github || ""} onChange={(e) => patch({ github: e.target.value })} />
+                    </Field>
+                    <Field label="Report / File Link">
+                      <TextInput value={item.report || ""} onChange={(e) => patch({ report: e.target.value })} />
+                    </Field>
+                    <ToggleField
+                      label="Featured card"
+                      checked={item.featured}
+                      onChange={(checked) => patch({ featured: checked })}
+                    />
+                  </div>
                 </>
               )}
             />
@@ -1280,20 +1344,42 @@ export default function AdminDashboard({ onLogout }) {
               items={data.certificates}
               onChange={(v) => update(["certificates"], v)}
               columns
-              createNew={() => ({ title: "Certificate", org: "", date: "", img: "", link: "", hidden: false })}
+              createNew={() => ({
+                title: "Certificate",
+                issuer: "",
+                category: "Testing",
+                date: "",
+                credentialId: "",
+                img: "",
+                link: "",
+                hidden: false,
+              })}
               renderItem={(item, idx, patch) => (
                 <>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <Field label="Title">
                       <TextInput value={item.title || ""} onChange={(e) => patch({ title: e.target.value })} />
                     </Field>
-                    <Field label="Organization">
-                      <TextInput value={item.org || ""} onChange={(e) => patch({ org: e.target.value })} />
+                    <Field label="Issuer / Organization">
+                      <TextInput
+                        value={item.issuer || item.org || ""}
+                        onChange={(e) => patch({ issuer: e.target.value, org: "" })}
+                      />
+                    </Field>
+                    <Field label="Category / Filter">
+                      <TextInput
+                        value={item.category || ""}
+                        onChange={(e) => patch({ category: e.target.value })}
+                        placeholder="Testing, Tools, Agile..."
+                      />
                     </Field>
                     <Field label="Date">
                       <TextInput value={item.date || ""} onChange={(e) => patch({ date: e.target.value })} />
                     </Field>
-                    <Field label="Link (optional)">
+                    <Field label="Credential ID">
+                      <TextInput value={item.credentialId || ""} onChange={(e) => patch({ credentialId: e.target.value })} />
+                    </Field>
+                    <Field label="Certificate Link">
                       <TextInput value={item.link || ""} onChange={(e) => patch({ link: e.target.value })} />
                     </Field>
                   </div>

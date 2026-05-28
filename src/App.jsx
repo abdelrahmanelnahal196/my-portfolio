@@ -146,6 +146,31 @@ function firstValue(...values) {
   return values.find((value) => String(value || "").trim()) || "";
 }
 
+function splitTags(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean);
+  return String(value || "")
+    .split(/[,|]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function uniqueValues(items, getter) {
+  return [...new Set(items.map(getter).map((item) => String(item || "").trim()).filter(Boolean))];
+}
+
+function certificateIssuer(certificate) {
+  return firstValue(certificate?.issuer, certificate?.org, String(certificate?.meta || "").split("•")[0]);
+}
+
+function certificateDate(certificate) {
+  if (certificate?.date) return certificate.date;
+  const parts = String(certificate?.meta || "")
+    .split("•")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return parts.length > 1 ? parts[parts.length - 1] : "";
+}
+
 function scrollToHash(hash) {
   const id = (hash || "").replace("#", "");
   const el = document.getElementById(id);
@@ -748,39 +773,138 @@ const PortfolioSite = memo(function PortfolioSite() {
       )}%3C/text%3E%3C/svg%3E`;
 
     const mode = layout?.projects || "grid";
+    const filters = ["All", ...uniqueValues(PROJECTS, (project) => project.category)];
+    const [activeFilter, setActiveFilter] = useState("All");
+    const filteredProjects =
+      activeFilter === "All" ? PROJECTS : PROJECTS.filter((project) => project.category === activeFilter);
 
     return (
       <Section
         id="projects"
         title="Featured Projects"
-        subtitle="A look into my journey in software testing and how each project shaped my skills"
+        subtitle="Case-study cards showing scope, tools, outcomes, and useful links"
       >
-        <div
-          className={mode === "list" ? `grid grid-cols-1 ${GAP}` : `grid grid-cols-1 md:grid-cols-3 ${GAP}`}
-        >
-          {PROJECTS.map((p) => (
-            <article key={p.title} className="glass glow-card rounded-2xl overflow-hidden">
-              <img
-                src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
-                alt={p.title}
-                className="w-full aspect-[16/10] object-cover border-b border-[var(--stroke)]"
-                loading="lazy"
-              />
-              <div className="p-5">
-                <h3 className="font-extrabold text-lg">{p.title}</h3>
-                <p className="mt-2 text-[color:var(--text-soft)] text-sm leading-relaxed">{p.desc}</p>
+        {filters.length > 1 && (
+          <div className="mb-6 flex flex-wrap justify-center gap-2">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setActiveFilter(filter)}
+                className={[
+                  "rounded-full px-4 py-2 text-sm font-bold border transition focus-ring",
+                  activeFilter === filter
+                    ? "bg-[color:var(--accent)] text-white border-transparent"
+                    : "bg-white/10 border-[var(--stroke)] text-[color:var(--text-soft)] hover:text-[color:var(--text-main)]",
+                ].join(" ")}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        )}
 
-                {p.link ? (
-                  <button
-                    className="mt-4 btn glass rounded-xl px-4 py-2 text-sm font-semibold focus-ring"
-                    onClick={() => openExternal(p.link)}
-                  >
-                    View
-                  </button>
-                ) : null}
-              </div>
-            </article>
-          ))}
+        <div
+          className={mode === "list" ? `grid grid-cols-1 ${GAP}` : `grid grid-cols-1 lg:grid-cols-2 ${GAP}`}
+        >
+          {filteredProjects.map((p, idx) => {
+            const tools = splitTags(p.tools);
+            const bullets = splitTags(p.bullets);
+            const description = firstValue(p.desc, p.subtitle, bullets[0]);
+            const featured = p.featured || idx === 0;
+
+            return (
+              <article
+                key={`${p.title}-${idx}`}
+                className={[
+                  "glass glow-card rounded-2xl overflow-hidden",
+                  featured && mode !== "list" ? "lg:col-span-2" : "",
+                ].join(" ")}
+              >
+                <div className={featured && mode !== "list" ? "grid lg:grid-cols-[1.05fr_.95fr]" : ""}>
+                  <div className="relative min-h-full border-b border-[var(--stroke)] lg:border-b-0 lg:border-r">
+                    <img
+                      src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
+                      alt={p.title}
+                      className="w-full aspect-[16/10] h-full object-cover"
+                      loading="lazy"
+                    />
+                    {p.category && (
+                      <span className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 text-xs font-bold text-white backdrop-blur">
+                        {p.category}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-5 md:p-6 flex flex-col">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-extrabold text-xl leading-tight">{p.title}</h3>
+                        {p.date && <p className="mt-1 text-xs font-bold text-[color:var(--accent)]">{p.date}</p>}
+                      </div>
+                      {featured && (
+                        <span className="rounded-full border border-[var(--stroke)] px-3 py-1 text-xs font-bold text-[color:var(--text-soft)]">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+
+                    {description && (
+                      <p className="mt-3 text-[color:var(--text-soft)] text-sm leading-relaxed">{description}</p>
+                    )}
+
+                    {bullets.length > 1 && (
+                      <ul className="mt-4 grid gap-2 text-sm text-[color:var(--text-soft)]">
+                        {bullets.slice(1, 4).map((bullet) => (
+                          <li key={bullet} className="flex gap-2">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {tools.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {tools.map((tool) => (
+                          <span key={tool} className="chip text-xs font-bold">
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {p.link && (
+                        <button
+                          className="btn rounded-xl px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
+                          onClick={() => openExternal(p.link)}
+                        >
+                          View Project
+                        </button>
+                      )}
+                      {p.github && (
+                        <button
+                          className="btn glass rounded-xl px-4 py-2 text-sm font-bold focus-ring"
+                          onClick={() => openExternal(p.github)}
+                        >
+                          GitHub
+                        </button>
+                      )}
+                      {p.report && (
+                        <button
+                          className="btn glass rounded-xl px-4 py-2 text-sm font-bold focus-ring"
+                          onClick={() => openExternal(assetUrl(p.report))}
+                        >
+                          Report
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </Section>
     );
@@ -793,17 +917,43 @@ const PortfolioSite = memo(function PortfolioSite() {
       )}%3C/text%3E%3C/svg%3E`;
 
     const mode = layout?.certificates || "grid";
+    const filters = ["All", ...uniqueValues(CERTS, (certificate) => certificate.category)];
+    const [activeFilter, setActiveFilter] = useState("All");
+    const filteredCerts =
+      activeFilter === "All" ? CERTS : CERTS.filter((certificate) => certificate.category === activeFilter);
+
+    const filterBar =
+      filters.length > 1 ? (
+        <div className="mb-6 flex flex-wrap justify-center gap-2">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              className={[
+                "rounded-full px-4 py-2 text-sm font-bold border transition focus-ring",
+                activeFilter === filter
+                  ? "bg-[color:var(--accent)] text-white border-transparent"
+                  : "bg-white/10 border-[var(--stroke)] text-[color:var(--text-soft)] hover:text-[color:var(--text-main)]",
+              ].join(" ")}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+      ) : null;
 
     if (mode === "list") {
       return (
-        <Section id="certificates" title="Certificates Gallery" subtitle="Professional certifications and achievements">
+        <Section id="certificates" title="Certificates Gallery" subtitle="Verified learning, tools, and testing credentials">
+          {filterBar}
           <div className={`grid grid-cols-1 md:grid-cols-2 ${GAP}`}>
-            {CERTS.map((c) => (
+            {filteredCerts.map((c) => (
               <article key={c.title} className="glass glow-card rounded-2xl overflow-hidden">
                 <div className="flex gap-4 p-4">
                   <a
-                    className="shrink-0 w-28 h-20 rounded-xl overflow-hidden border border-white/10 bg-white/5"
-                    href={assetUrl(c.img)}
+                    className="shrink-0 w-32 h-24 rounded-xl overflow-hidden border border-[var(--stroke)] bg-white/5"
+                    href={assetUrl(c.link || c.img)}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -817,14 +967,20 @@ const PortfolioSite = memo(function PortfolioSite() {
                   </a>
                   <div className="min-w-0">
                     <h3 className="font-extrabold">{c.title}</h3>
-                    <p className="mt-1 text-sm text-[color:var(--text-soft)]">{c.meta}</p>
+                    <p className="mt-1 text-sm text-[color:var(--text-soft)]">
+                      {certificateIssuer(c)}
+                      {certificateDate(c) ? ` • ${certificateDate(c)}` : ""}
+                    </p>
+                    {c.credentialId && (
+                      <p className="mt-1 text-xs text-[color:var(--text-soft)]">ID: {c.credentialId}</p>
+                    )}
                     <a
                       className="inline-block mt-3 text-sm font-semibold text-[color:var(--accent)]"
-                      href={assetUrl(c.img)}
+                      href={assetUrl(c.link || c.img)}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      Open →
+                      View Certificate
                     </a>
                   </div>
                 </div>
@@ -835,13 +991,13 @@ const PortfolioSite = memo(function PortfolioSite() {
       );
     }
 
-    // grid (default): نفس الستايل بتاعك
     return (
-      <Section id="certificates" title="Certificates Gallery" subtitle="Professional certifications and achievements">
+      <Section id="certificates" title="Certificates Gallery" subtitle="Verified learning, tools, and testing credentials">
+        {filterBar}
         <div className="cert-grid">
-          {CERTS.map((c) => (
+          {filteredCerts.map((c) => (
             <article key={c.title} className="glass glow-card cert-card">
-              <a className="cert-link" href={assetUrl(c.img)} target="_blank" rel="noreferrer">
+              <a className="cert-link" href={assetUrl(c.link || c.img)} target="_blank" rel="noreferrer">
                 <img
                   className="cert-img"
                   src={assetUrl(c.img)}
@@ -851,8 +1007,21 @@ const PortfolioSite = memo(function PortfolioSite() {
                 />
               </a>
               <div className="cert-body">
+                {c.category && <div className="mb-2 text-xs font-bold text-[color:var(--accent)]">{c.category}</div>}
                 <h3 className="cert-title">{c.title}</h3>
-                <p className="cert-meta">{c.meta}</p>
+                <p className="cert-meta">
+                  {certificateIssuer(c)}
+                  {certificateDate(c) ? ` • ${certificateDate(c)}` : ""}
+                </p>
+                {c.credentialId && <p className="cert-meta">ID: {c.credentialId}</p>}
+                <a
+                  className="mt-4 inline-flex rounded-xl bg-white/10 border border-[var(--stroke)] px-3 py-2 text-sm font-bold text-[color:var(--accent)]"
+                  href={assetUrl(c.link || c.img)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View Certificate
+                </a>
               </div>
             </article>
           ))}

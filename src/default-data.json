@@ -216,46 +216,98 @@
     {
       "title": "",
       "desc": "",
+      "category": "",
+      "tools": [],
+      "date": "",
       "link": "",
-      "image": ""
+      "github": "",
+      "report": "",
+      "image": "",
+      "bullets": [],
+      "featured": false
     },
     {
       "title": "LMS Platform Testing",
       "desc": "Authentication, course management, quizzes, payments — smoke/regression/UAT + UI/UX feedback.",
+      "category": "Manual Testing",
+      "tools": ["Jira", "Excel", "Test Cases", "Bug Reports"],
+      "date": "2025",
       "link": "",
-      "image": ""
+      "github": "",
+      "report": "",
+      "image": "",
+      "bullets": [
+        "Designed smoke, regression, and UAT coverage for learner and admin flows.",
+        "Reported UI/UX issues with clear reproduction steps and expected results."
+      ],
+      "featured": true
     },
     {
       "title": "API Testing Samples",
       "desc": "Postman collections, positive/negative cases, and clear bug reports.",
+      "category": "API Testing",
+      "tools": ["Postman", "JSON", "API Scenarios"],
+      "date": "2025",
       "link": "",
-      "image": ""
+      "github": "",
+      "report": "",
+      "image": "",
+      "bullets": [
+        "Built positive, negative, validation, and edge-case API scenarios.",
+        "Organized findings into reusable collections and readable reports."
+      ],
+      "featured": false
     },
     {
       "title": "JAW Store",
       "desc": "Manual Testing - (Dashboard / Website / Mobile App). Test design, execution, and defect reporting.",
+      "category": "E-commerce",
+      "tools": ["Manual Testing", "Mobile", "Web", "Dashboard"],
+      "date": "2025",
       "link": "",
-      "image": ""
+      "github": "",
+      "report": "",
+      "image": "",
+      "bullets": [
+        "Covered dashboard, public website, and mobile app behavior.",
+        "Created defect reports with severity, priority, and reproducible steps."
+      ],
+      "featured": false
     }
   ],
   "certificates": [
     {
       "hidden": false,
       "title": "Software Testing Course",
+      "issuer": "Udemy",
+      "category": "Testing",
+      "date": "Nov 25, 2025",
+      "credentialId": "",
       "meta": "Udemy • 54.5 hours • Nov 25, 2025",
-      "img": "/assets/certificates/udemy-software-testing.jpg"
+      "img": "/assets/certificates/udemy-software-testing.jpg",
+      "link": ""
     },
     {
       "hidden": false,
       "title": "Introduction to Software Testing Concepts & Techniques",
+      "issuer": "Mahara-Tech (ITI)",
+      "category": "Testing",
+      "date": "16/12/2025",
+      "credentialId": "",
       "meta": "Mahara-Tech (ITI) • 1h 20m • 16/12/2025",
-      "img": "/assets/certificates/iti-testing-concepts.png"
+      "img": "/assets/certificates/iti-testing-concepts.png",
+      "link": ""
     },
     {
       "hidden": false,
       "title": "Complete SQL Course",
+      "issuer": "QAcart",
+      "category": "Tools",
+      "date": "Certificate of Completion",
+      "credentialId": "",
       "meta": "QAcart • Certificate of Completion",
-      "img": "/assets/certificates/qacart-sql.png"
+      "img": "/assets/certificates/qacart-sql.png",
+      "link": ""
     }
   ],
   "contactCards": [

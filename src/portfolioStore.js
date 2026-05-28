@@ -112,8 +112,42 @@ function migrateData(data) {
     d.contactCards = [];
   }
 
+  d.projects = Array.isArray(d.projects)
+    ? d.projects.map((project) => {
+        if (!project) return project;
+        return {
+          ...project,
+          desc: project.desc ?? project.subtitle ?? "",
+          category: project.category ?? "",
+          tools: Array.isArray(project.tools)
+            ? project.tools
+            : String(project.tools || "")
+                .split(/[,|]/)
+                .map((item) => item.trim())
+                .filter(Boolean),
+          bullets: Array.isArray(project.bullets) ? project.bullets : [],
+          featured: !!project.featured,
+          hidden: !!project.hidden,
+        };
+      })
+    : [];
+
   d.certificates = Array.isArray(d.certificates)
-    ? d.certificates.map((certificate) => (certificate ? { ...certificate, hidden: !!certificate.hidden } : certificate))
+    ? d.certificates.map((certificate) => {
+        if (!certificate) return certificate;
+        const metaParts = String(certificate.meta || "")
+          .split("•")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        return {
+          ...certificate,
+          issuer: certificate.issuer ?? certificate.org ?? metaParts[0] ?? "",
+          date: certificate.date ?? (metaParts.length > 1 ? metaParts[metaParts.length - 1] : ""),
+          category: certificate.category ?? "",
+          credentialId: certificate.credentialId ?? "",
+          hidden: !!certificate.hidden,
+        };
+      })
     : [];
   d.siteTheme = d.siteTheme || {};
 
