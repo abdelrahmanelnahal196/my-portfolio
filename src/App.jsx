@@ -803,7 +803,7 @@ const PortfolioSite = memo(function PortfolioSite() {
           </div>
         )}
 
-        <div className={`project-card-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 ${GAP}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${GAP}`}>
           {filteredProjects.map((p, idx) => {
             const tools = splitTags(p.tools);
             const bullets = splitTags(p.bullets);
@@ -813,64 +813,57 @@ const PortfolioSite = memo(function PortfolioSite() {
             return (
               <article
                 key={`${p.title}-${idx}`}
-                className="project-compact-card glass glow-card overflow-hidden"
+                className="project-list-card glass glow-card overflow-hidden"
               >
-                <div className="relative border-b border-[var(--stroke)]">
+                <div className="flex gap-4 p-4">
+                  <div className="project-list-thumb relative shrink-0 overflow-hidden border border-[var(--stroke)] bg-white/5">
                     <img
                       src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
                       alt={p.title}
-                    className="project-compact-image"
+                      className="h-full w-full object-cover"
                       loading="lazy"
                     />
-                    {p.category && (
-                    <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
-                        {p.category}
-                      </span>
-                    )}
                   </div>
 
-                <div className="project-compact-body">
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
                       <div>
-                      <h3 className="project-compact-title">{p.title}</h3>
+                        <h3 className="project-list-title">{p.title}</h3>
                         {p.date && <p className="mt-1 text-xs font-bold text-[color:var(--accent)]">{p.date}</p>}
                       </div>
                       {featured && (
-                      <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
+                        <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
                           Featured
                         </span>
                       )}
                     </div>
 
-                    {description && (
-                    <p className="project-compact-desc">{description}</p>
-                    )}
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {p.category && <span className="chip text-xs font-bold">{p.category}</span>}
+                      {tools.slice(0, 3).map((tool) => (
+                        <span key={tool} className="chip text-xs font-bold">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+
+                    {description && <p className="project-list-desc">{description}</p>}
 
                     {bullets.length > 1 && (
-                        <ul className="mt-3 grid gap-1.5 text-xs text-[color:var(--text-soft)]">
-                          {bullets.slice(1, 3).map((bullet) => (
+                      <ul className="mt-3 grid gap-1.5 text-xs text-[color:var(--text-soft)]">
+                        {bullets.slice(1, 3).map((bullet) => (
                           <li key={bullet} className="flex gap-2">
-                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
                             <span>{bullet}</span>
                           </li>
                         ))}
                       </ul>
                     )}
 
-                    {tools.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {tools.slice(0, 4).map((tool) => (
-                          <span key={tool} className="chip text-xs font-bold">
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                  <div className="mt-auto pt-4 flex flex-wrap gap-2">
+                    <div className="mt-4 flex flex-wrap gap-2">
                       {p.link && (
                         <button
-                        className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
+                          className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
                           onClick={() => openExternal(p.link)}
                         >
                           View
@@ -878,7 +871,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.github && (
                         <button
-                        className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                          className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(p.github)}
                         >
                           GitHub
@@ -886,7 +879,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.report && (
                         <button
-                        className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
+                          className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(assetUrl(p.report))}
                         >
                           Report
@@ -894,6 +887,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                     </div>
                   </div>
+                </div>
               </article>
             );
           })}

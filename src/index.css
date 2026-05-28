@@ -938,36 +938,25 @@ html:not(.dark) .tool-card {
 }
 
 /* =========================================================
-  Compact Project Cards
+  Project List Cards
 ========================================================= */
-.project-compact-card {
-  min-height: 420px;
+.project-list-card {
   border-radius: 18px;
-  display: flex;
-  flex-direction: column;
 }
 
-.project-compact-image {
-  width: 100%;
-  height: 145px;
-  object-fit: cover;
-  display: block;
+.project-list-thumb {
+  width: 132px;
+  height: 104px;
+  border-radius: 14px;
 }
 
-.project-compact-body {
-  min-height: 275px;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-}
-
-.project-compact-title {
+.project-list-title {
   font-size: 17px;
   line-height: 1.18;
   font-weight: 900;
 }
 
-.project-compact-desc {
+.project-list-desc {
   margin-top: 10px;
   color: var(--text-soft);
   font-size: 13px;
@@ -979,12 +968,13 @@ html:not(.dark) .tool-card {
 }
 
 @media (max-width: 640px) {
-  .project-compact-card {
-    min-height: 400px;
+  .project-list-card > div {
+    flex-direction: column;
   }
 
-  .project-compact-image {
-    height: 132px;
+  .project-list-thumb {
+    width: 100%;
+    height: 150px;
   }
 }
 
