@@ -224,7 +224,18 @@ select:focus-visible{
   background: rgba(255,255,255,.72);
   border: 1px solid rgba(15, 23, 42, .16);
   color: #111827;
+  color-scheme: light;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+}
+
+select.dashboard-field option {
+  background: #ffffff;
+  color: #111827;
+}
+
+select.dashboard-field option:checked {
+  background: color-mix(in srgb, var(--accent) 22%, #ffffff);
+  color: #111827;
 }
 
 .dashboard-field::placeholder {
@@ -324,7 +335,18 @@ html.dark .dashboard-field {
   background: rgba(0,0,0,.20);
   border-color: rgba(255,255,255,.10);
   color: #f8fafc;
+  color-scheme: dark;
   box-shadow: none;
+}
+
+html.dark select.dashboard-field option {
+  background: #0b1220;
+  color: #f8fafc;
+}
+
+html.dark select.dashboard-field option:checked {
+  background: color-mix(in srgb, var(--accent) 34%, #0b1220);
+  color: #ffffff;
 }
 
 html.dark .dashboard-label {
