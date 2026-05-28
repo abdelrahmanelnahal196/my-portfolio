@@ -1,36 +1,63 @@
 // src/portfolioStore.js
-import STATIC_DATA from "./data/portfolio.json";
+import defaultData from "./default-data.json";
 
 export const STORAGE_KEY = "portfolio_dashboard_v1";
-export const SAVED_PALETTES_KEY = "portfolio_saved_palettes_v1";
+const LEGACY_PORTFOLIOS_INDEX_KEY = "portfolio_master_index_v1";
+const LEGACY_PORTFOLIO_DATA_PREFIX = "portfolio_master_data_v1:";
 
-// ✅ DEFAULT_DATA now comes from a static JSON file (published with the site)
-export const DEFAULT_DATA = STATIC_DATA;
+const SCHEMA_DATA = {
+  assets: {
+    photo: "",
+    cv: "",
+  },
 
-/* =========================================================
-   ✅ Helpers
-========================================================= */
-function isPlainObject(v) {
-  return v != null && typeof v === "object" && !Array.isArray(v);
-}
+  profile: {
+    name: "",
+    title: "",
+    location: "",
+    summary: "",
+    email: "",
+    linkedin: "",
+    github: "",
+  },
+
+  aboutCertifications: [],
+  technicalSkills: [],
+  softSkills: [],
+  businessDomains: [],
+  workExperience: [],
+  toolkit: [],
+  projects: [],
+  certificates: [],
+  contactCards: [],
+  floatingButtons: [],
+
+  siteTheme: {
+    palette: "ocean",
+    custom: { accent: "#0ea5e9", accent2: "#2563eb" },
+    style: { cards: "glass", preset: "default" },
+    density: "comfortable",
+    layout: { projects: "grid", certificates: "grid", experience: "timeline" },
+    background: { light1: "#f6fbff", light2: "#eef6ff", dark1: "#070b14", dark2: "#0a1022" },
+    avatarStyle: "circle",
+  },
+};
+
+export const DEFAULT_DATA = deepMerge(SCHEMA_DATA, defaultData);
 
 function cloneDeep(obj) {
   try {
+    // eslint-disable-next-line no-undef
     return structuredClone(obj);
   } catch {
     return JSON.parse(JSON.stringify(obj ?? null));
   }
 }
 
-function cleanStr(v) {
-  return String(v ?? "").trim();
+function isPlainObject(value) {
+  return value != null && typeof value === "object" && !Array.isArray(value);
 }
 
-/**
- * Deep merge objects:
- * - Objects: merged recursively
- * - Arrays: keep incoming as-is
- */
 function deepMerge(fallback, incoming) {
   if (incoming === undefined || incoming === null) return cloneDeep(fallback);
 
@@ -40,8 +67,8 @@ function deepMerge(fallback, incoming) {
 
   if (isPlainObject(fallback) && isPlainObject(incoming)) {
     const out = { ...cloneDeep(fallback) };
-    for (const k of Object.keys(incoming)) {
-      out[k] = deepMerge(fallback?.[k], incoming[k]);
+    for (const key of Object.keys(incoming)) {
+      out[key] = deepMerge(fallback?.[key], incoming[key]);
     }
     return out;
   }
@@ -49,411 +76,97 @@ function deepMerge(fallback, incoming) {
   return incoming !== undefined ? incoming : cloneDeep(fallback);
 }
 
-<<<<<<< HEAD
-function buildSafePortfolio(data) {
-  const migrated = migrateData(data);
-  return deepMerge(DEFAULT_DATA, migrated);
-}
-
-=======
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
-/* =========================================================
-   ✅ Migration / Normalization
-========================================================= */
-function normalizeTextItem(x) {
-  if (typeof x === "string") return { text: x, hidden: false };
-  return { text: x?.text ?? "", hidden: !!x?.hidden };
-}
-
-function normalizeEducationItem(x) {
-  if (!x || typeof x !== "object") {
-    return { degree: "", institution: "", details: "", date: "", hidden: false };
-  }
-  return {
-    degree: x.degree ?? "",
-    institution: x.institution ?? "",
-    details: x.details ?? "",
-    date: x.date ?? "",
-    hidden: !!x.hidden,
-  };
-}
-
-function normalizeSectionsCfg(x) {
-  const def = cloneDeep(DEFAULT_DATA?.siteTheme?.sections || { order: [], hidden: {} });
-  if (!x || typeof x !== "object") return def;
-
-  const order = Array.isArray(x.order) ? x.order.map((s) => cleanStr(s)).filter(Boolean) : def.order;
-  const hidden = isPlainObject(x.hidden) ? x.hidden : def.hidden;
-
-  return { order, hidden };
-}
-
 function migrateData(data) {
   const d = cloneDeep(data || {});
+
   d.assets = d.assets || {};
   d.profile = d.profile || {};
-  d.siteTheme = d.siteTheme || {};
 
-  // ✅ Ensure assets/icons exists (App.jsx may use it)
-  d.assets.icons = d.assets.icons || {};
-
-  d.siteTheme.custom = d.siteTheme.custom || { accent: "#0ea5e9", accent2: "#2563eb" };
-  d.siteTheme.style = d.siteTheme.style || { cards: "glass", preset: "default" };
-  d.siteTheme.layout = d.siteTheme.layout || { projects: "grid", certificates: "grid", experience: "timeline" };
-  d.siteTheme.background =
-    d.siteTheme.background || {
-      light1: "#f6fbff",
-      light2: "#eef6ff",
-      dark1: "#070b14",
-      dark2: "#0a1022",
-    };
-
-  d.siteTheme.seo = d.siteTheme.seo || {};
-  d.siteTheme.analytics = d.siteTheme.analytics || {};
-  d.siteTheme.contactForm = d.siteTheme.contactForm || {};
-  // ✅ footer
-  d.siteTheme.footer = d.siteTheme.footer || { enabled: true, tagline: "", showIcons: true, maxIcons: 6 };
-
-  // ✅ sections manager config
-  d.siteTheme.sections = normalizeSectionsCfg(d.siteTheme.sections);
-
-  // ✅ education
-<<<<<<< HEAD
-  if (Array.isArray(d.education)) {
-    d.education = d.education.map(normalizeEducationItem).filter((x) => x.degree || x.institution);
-  } else {
-    d.education = [];
-  }
-
-  // normalize skill arrays to objects {text, hidden}
-  if (Array.isArray(d.technicalSkills)) {
-    d.technicalSkills = d.technicalSkills.map(normalizeTextItem).filter((x) => x.text);
-  } else {
-    d.technicalSkills = [];
-  }
-
-  if (Array.isArray(d.softSkills)) {
-    d.softSkills = d.softSkills.map(normalizeTextItem).filter((x) => x.text);
-  } else {
-    d.softSkills = [];
-  }
-
-  if (Array.isArray(d.businessDomains)) {
-    d.businessDomains = d.businessDomains.map(normalizeTextItem).filter((x) => x.text);
-  } else {
-    d.businessDomains = [];
-  }
-=======
-  if (Array.isArray(d.education))
-    d.education = d.education.map(normalizeEducationItem).filter((x) => x.degree || x.institution);
-  else d.education = [];
-
-  // normalize skill arrays to objects {text, hidden}
-  if (Array.isArray(d.technicalSkills)) d.technicalSkills = d.technicalSkills.map(normalizeTextItem).filter((x) => x.text);
-  else d.technicalSkills = [];
-
-  if (Array.isArray(d.softSkills)) d.softSkills = d.softSkills.map(normalizeTextItem).filter((x) => x.text);
-  else d.softSkills = [];
-
-  if (Array.isArray(d.businessDomains)) d.businessDomains = d.businessDomains.map(normalizeTextItem).filter((x) => x.text);
-  else d.businessDomains = [];
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
-
-  // normalize projects tags + hidden
-  if (Array.isArray(d.projects)) {
-    d.projects = d.projects
-      .map((p) => {
-        if (!p) return p;
-        const tags = Array.isArray(p.tags)
-          ? p.tags.filter(Boolean).map((t) => String(t).trim()).filter(Boolean)
-          : typeof p.tags === "string"
-<<<<<<< HEAD
-            ? p.tags.split(",").map((t) => t.trim()).filter(Boolean)
-            : [];
-        return { ...p, tags, hidden: !!p.hidden };
-      })
-      .filter(Boolean);
-  } else {
-    d.projects = [];
-  }
-=======
-          ? p.tags.split(",").map((t) => t.trim()).filter(Boolean)
-          : [];
-        return { ...p, tags, hidden: !!p.hidden };
-      })
-      .filter(Boolean);
-  } else d.projects = [];
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
-
-  // floating buttons compat (supports old fields + new optional button/btnClass)
   if (Array.isArray(d.floatingButtons)) {
-    d.floatingButtons = d.floatingButtons
-      .map((b) => {
-        if (!b) return b;
-        return {
-          title: b.title ?? b.label ?? "Link",
-          url: b.url ?? b.href ?? "",
-          iconUrl: b.iconUrl ?? "",
-          // ✅ Optional fields (won't break anything if unused)
-          button: b.button ?? b.value ?? "",
-          btnClass: b.btnClass ?? "",
-          hidden: !!b.hidden,
-        };
-      })
-      .filter((b) => b && (b.title || b.url));
-<<<<<<< HEAD
+    d.floatingButtons = d.floatingButtons.map((button) => {
+      if (!button) return button;
+      return {
+        label: button.label ?? button.title ?? "",
+        href: button.href ?? button.url ?? "",
+        iconUrl: button.iconUrl ?? "",
+        hidden: !!button.hidden,
+      };
+    });
   } else {
     d.floatingButtons = [];
   }
-=======
-  } else d.floatingButtons = [];
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
 
-  // contact cards compat
   if (Array.isArray(d.contactCards)) {
-    d.contactCards = d.contactCards
-      .map((c) => {
-        if (!c) return c;
-        return {
-          title: c.title ?? "",
-          button: c.button ?? c.value ?? "Open",
-          btnClass: c.btnClass ?? "btn glass",
-          url: c.url ?? c.href ?? "",
-          iconUrl: c.iconUrl ?? "",
-          hidden: !!c.hidden,
-        };
-      })
-      .filter((c) => c && (c.title || c.url));
-<<<<<<< HEAD
+    d.contactCards = d.contactCards.map((card) => {
+      if (!card) return card;
+      return {
+        title: card.title ?? "",
+        subtitle: card.subtitle ?? "",
+        value: card.value ?? card.button ?? "",
+        href: card.href ?? card.url ?? "",
+        iconUrl: card.iconUrl ?? "",
+        hidden: !!card.hidden,
+      };
+    });
   } else {
     d.contactCards = [];
   }
 
-  // other lists with hidden
-  if (Array.isArray(d.certificates)) {
-    d.certificates = d.certificates.map((c) => (c ? { ...c, hidden: !!c.hidden } : c)).filter(Boolean);
-  } else {
-    d.certificates = [];
-  }
-
-  if (Array.isArray(d.workExperience)) {
-    d.workExperience = d.workExperience.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  } else {
-    d.workExperience = [];
-  }
-
-  if (Array.isArray(d.toolkit)) {
-    d.toolkit = d.toolkit.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  } else {
-    d.toolkit = [];
-  }
-
-  if (Array.isArray(d.aboutCertifications)) {
-    d.aboutCertifications = d.aboutCertifications.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  } else {
-    d.aboutCertifications = [];
-  }
-=======
-  } else d.contactCards = [];
-
-  // other lists with hidden
-  if (Array.isArray(d.certificates)) d.certificates = d.certificates.map((c) => (c ? { ...c, hidden: !!c.hidden } : c)).filter(Boolean);
-  else d.certificates = [];
-
-  if (Array.isArray(d.workExperience)) d.workExperience = d.workExperience.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  else d.workExperience = [];
-
-  if (Array.isArray(d.toolkit)) d.toolkit = d.toolkit.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  else d.toolkit = [];
-
-  if (Array.isArray(d.aboutCertifications))
-    d.aboutCertifications = d.aboutCertifications.map((x) => (x ? { ...x, hidden: !!x.hidden } : x)).filter(Boolean);
-  else d.aboutCertifications = [];
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
-
-  // ✅ Fix/normalize some key strings (safe, no breaking)
-  d.profile.email = cleanStr(d.profile.email);
-  d.profile.whatsapp = cleanStr(d.profile.whatsapp);
-  d.profile.linkedin = cleanStr(d.profile.linkedin);
-  d.profile.github = cleanStr(d.profile.github);
-
-  // contactForm defaults (ensure keys exist)
-  d.siteTheme.contactForm = {
-    mode: cleanStr(d.siteTheme.contactForm.mode || "mailto") || "mailto",
-    formspreeEndpoint: cleanStr(d.siteTheme.contactForm.formspreeEndpoint || ""),
-    subject: cleanStr(d.siteTheme.contactForm.subject || "Portfolio Contact") || "Portfolio Contact",
-    toEmail: cleanStr(d.siteTheme.contactForm.toEmail || ""),
-  };
-
-  // analytics defaults
-  d.siteTheme.analytics = {
-    enabled: !!d.siteTheme.analytics.enabled,
-    provider: cleanStr(d.siteTheme.analytics.provider || "plausible") || "plausible",
-    plausibleDomain: cleanStr(d.siteTheme.analytics.plausibleDomain || ""),
-    gaMeasurementId: cleanStr(d.siteTheme.analytics.gaMeasurementId || ""),
-  };
-
-  // seo defaults
-  d.siteTheme.seo = {
-    siteTitle: cleanStr(d.siteTheme.seo.siteTitle || ""),
-    description: cleanStr(d.siteTheme.seo.description || ""),
-    ogImage: cleanStr(d.siteTheme.seo.ogImage || ""),
-  };
+  d.certificates = Array.isArray(d.certificates)
+    ? d.certificates.map((certificate) => (certificate ? { ...certificate, hidden: !!certificate.hidden } : certificate))
+    : [];
+  d.siteTheme = d.siteTheme || {};
 
   return d;
 }
 
-/* =========================================================
-   ✅ Public API
-========================================================= */
-/**
- * ✅ loadPortfolio:
- * - If localStorage has data -> use it
- * - else fallback to DEFAULT_DATA (STATIC JSON published with the site)
-<<<<<<< HEAD
- * - Always normalize, even for default JSON
-=======
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
- */
-export function loadPortfolio() {
+function readJson(key) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-<<<<<<< HEAD
-    if (!raw) return buildSafePortfolio(DEFAULT_DATA);
-
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return buildSafePortfolio(DEFAULT_DATA);
-
-    return buildSafePortfolio(parsed);
+    return parsed && typeof parsed === "object" ? parsed : null;
   } catch {
-    return buildSafePortfolio(DEFAULT_DATA);
-=======
-    if (!raw) return cloneDeep(DEFAULT_DATA);
-
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return cloneDeep(DEFAULT_DATA);
-
-    const migrated = migrateData(parsed);
-    return deepMerge(DEFAULT_DATA, migrated);
-  } catch {
-    return cloneDeep(DEFAULT_DATA);
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
+    return null;
   }
 }
 
-export function savePortfolio(data) {
-<<<<<<< HEAD
-  const safe = buildSafePortfolio(data);
-=======
-  const safe = deepMerge(DEFAULT_DATA, migrateData(data));
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
-
-  // ✅ Stamp a meta field so saves are always detectable (and helps debugging)
-  safe._meta = {
-    ...(safe._meta || {}),
-    updatedAt: new Date().toISOString(),
-  };
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
-
-    // ✅ Verify write (some environments silently fail)
-    const roundtrip = localStorage.getItem(STORAGE_KEY);
-    if (!roundtrip) throw new Error("Storage write failed: empty read-back");
-
-    window.dispatchEvent(new Event("portfolio:updated"));
-    return true;
-  } catch (e) {
-    console.error("savePortfolio failed:", e);
-    alert(
-      "Save failed. Please clear site data (LocalStorage) and try again. If you uploaded large Base64 images, move them to /public/assets and use a path instead."
-    );
-    return false;
-  }
+function loadLegacyActivePortfolio() {
+  const index = readJson(LEGACY_PORTFOLIOS_INDEX_KEY);
+  const activeId = index?.activeId || index?.items?.[0]?.id;
+  if (!activeId) return null;
+  return readJson(`${LEGACY_PORTFOLIO_DATA_PREFIX}${activeId}`);
 }
 
-export function resetPortfolio() {
-<<<<<<< HEAD
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {}
-=======
-  localStorage.removeItem(STORAGE_KEY);
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177
+function normalizePortfolio(data) {
+  return deepMerge(DEFAULT_DATA, migrateData(data));
+}
+
+function dispatchPortfolioUpdate() {
   window.dispatchEvent(new Event("portfolio:updated"));
 }
 
-/* =========================================================
-   ✅ Export/Import JSON FILE helpers
-   - Export: download a file (e.g., portfolio.json)
-   - Import: read JSON file and return parsed object
-========================================================= */
-export function exportPortfolioJson(data, filename = "portfolio.json") {
-  const txt = JSON.stringify(data ?? {}, null, 2);
-  const blob = new Blob([txt], { type: "application/json;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
+export function loadPortfolio() {
+  const saved = readJson(STORAGE_KEY);
+  if (saved) return normalizePortfolio(saved);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-export function importPortfolioJsonFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result || "{}"));
-        resolve(parsed);
-      } catch {
-        reject(new Error("Invalid JSON file"));
-      }
-    };
-    reader.readAsText(file);
-  });
-}
-
-/* =========================================================
-   ✅ Saved palettes helpers (persist)
-========================================================= */
-export function loadSavedPalettes() {
-  try {
-    const raw = localStorage.getItem(SAVED_PALETTES_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(arr)) return [];
-    return arr
-      .map((p) => ({
-        name: String(p?.name || "").trim(),
-        accent: String(p?.accent || "").trim(),
-        accent2: String(p?.accent2 || "").trim(),
-      }))
-      .filter((p) => p.name && p.accent && p.accent2);
-  } catch {
-    return [];
+  const legacy = loadLegacyActivePortfolio();
+  if (legacy) {
+    const normalized = normalizePortfolio(legacy);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
   }
+
+  return cloneDeep(DEFAULT_DATA);
 }
 
-export function saveSavedPalettes(palettes) {
-<<<<<<< HEAD
-  try {
-    const safe = Array.isArray(palettes) ? palettes : [];
-    localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(safe));
-    window.dispatchEvent(new Event("portfolio:palettes-updated"));
-    return true;
-  } catch (e) {
-    console.error("saveSavedPalettes failed:", e);
-    return false;
-  }
+export function savePortfolio(data) {
+  const safe = normalizePortfolio(data);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
+  dispatchPortfolioUpdate();
 }
-=======
-  const safe = Array.isArray(palettes) ? palettes : [];
-  localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(safe));
-  window.dispatchEvent(new Event("portfolio:palettes-updated"));
+
+export function resetPortfolio() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DATA));
+  dispatchPortfolioUpdate();
 }
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177

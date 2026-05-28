@@ -3,14 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Abdelrahman El Nahal | QA Engineer</title>
+    <meta
+      name="description"
+      content="Abdelrahman El Nahal - Software Test Engineer portfolio, projects, certificates, and contact links."
+    />
+    <script>
+      (function () {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.pathname + location.search + location.hash) {
+          history.replaceState(null, "", redirect);
+        }
+      })();
+    </script>
+    <title>Abdelrahman El Nahal | Software Test Engineer</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 9f5c4c6b17c0e86477cd1e9a0d336c650bdc6177

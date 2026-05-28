@@ -19,12 +19,12 @@
   },
   "aboutCertifications": [
     {
-      "hidden": true,
+      "hidden": false,
       "title": "ISTQB Foundation Level (FL) V4.0",
       "date": "Jun 2025"
     },
     {
-      "hidden": true,
+      "hidden": false,
       "title": "ISTQB Mobile Application Testing (MAT)",
       "date": "Sep 2025"
     }
@@ -315,13 +315,5 @@
       "iconUrl": "/assets/icons/tiktok.png",
       "btnClass": "btn bg-black/80 hover:bg-black text-white"
     }
-  ],
-  "siteTheme": {
-    "footer": {
-      "enabled": true,
-      "tagline": "",
-      "showIcons": true,
-      "maxIcons": 6
-    }
-  }
+  ]
 }
