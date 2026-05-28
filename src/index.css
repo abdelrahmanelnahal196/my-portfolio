@@ -938,6 +938,128 @@ html:not(.dark) .tool-card {
 }
 
 /* =========================================================
+  Projects Auto Slider
+========================================================= */
+.project-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.project-slider-window {
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+.project-slider-window::-webkit-scrollbar { display: none; }
+
+.project-slider-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding: 10px 6px 18px;
+  will-change: transform;
+  transform: translateZ(0);
+  animation: projectMarqueeMove 30s linear infinite;
+}
+
+.project-slider:hover .project-slider-track,
+.project-slider:focus-within .project-slider-track {
+  animation-play-state: paused;
+}
+
+.project-slider-card {
+  width: min(320px, calc(100vw - 52px));
+  min-height: 430px;
+  border-radius: 18px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-slider-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.project-slider-body {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.project-slider-title {
+  font-size: 17px;
+  line-height: 1.18;
+  font-weight: 900;
+}
+
+.project-slider-desc {
+  margin-top: 10px;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 90px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.project-fade.left {
+  left: 0;
+  background: linear-gradient(90deg, rgba(7,11,20,.95), transparent);
+}
+
+.project-fade.right {
+  right: 0;
+  background: linear-gradient(270deg, rgba(7,11,20,.95), transparent);
+}
+
+html:not(.dark) .project-fade.left {
+  background: linear-gradient(90deg, rgba(246,251,255,.95), transparent);
+}
+
+html:not(.dark) .project-fade.right {
+  background: linear-gradient(270deg, rgba(246,251,255,.95), transparent);
+}
+
+@keyframes projectMarqueeMove {
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-50%,0,0); }
+}
+
+@media (max-width: 640px) {
+  .project-slider-track {
+    gap: 12px;
+    animation-duration: 36s;
+  }
+
+  .project-slider-card {
+    min-height: 400px;
+  }
+
+  .project-slider-image {
+    height: 132px;
+  }
+
+  .project-fade {
+    width: 42px;
+  }
+}
+
+/* =========================================================
   Contact cards + footer icons sizing
 ========================================================= */
 .contact-icon-box { 

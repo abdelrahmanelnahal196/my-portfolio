@@ -772,11 +772,11 @@ const PortfolioSite = memo(function PortfolioSite() {
         title
       )}%3C/text%3E%3C/svg%3E`;
 
-    const mode = layout?.projects || "grid";
     const filters = ["All", ...uniqueValues(PROJECTS, (project) => project.category)];
     const [activeFilter, setActiveFilter] = useState("All");
     const filteredProjects =
       activeFilter === "All" ? PROJECTS : PROJECTS.filter((project) => project.category === activeFilter);
+    const sliderProjects = filteredProjects.length > 0 ? [...filteredProjects, ...filteredProjects] : [];
 
     return (
       <Section
@@ -804,60 +804,59 @@ const PortfolioSite = memo(function PortfolioSite() {
           </div>
         )}
 
-        <div
-          className={mode === "list" ? `grid grid-cols-1 ${GAP}` : `grid grid-cols-1 lg:grid-cols-2 ${GAP}`}
-        >
-          {filteredProjects.map((p, idx) => {
+        <div className="project-slider" aria-label="Projects auto slider">
+          <div className="project-fade left" />
+          <div className="project-fade right" />
+
+          <div className="project-slider-window">
+            <div className="project-slider-track">
+              {sliderProjects.map((p, idx) => {
             const tools = splitTags(p.tools);
             const bullets = splitTags(p.bullets);
             const description = firstValue(p.desc, p.subtitle, bullets[0]);
-            const featured = p.featured || idx === 0;
+            const featured = p.featured;
 
             return (
               <article
                 key={`${p.title}-${idx}`}
-                className={[
-                  "glass glow-card rounded-2xl overflow-hidden",
-                  featured && mode !== "list" ? "lg:col-span-2" : "",
-                ].join(" ")}
+                    className="project-slider-card glass glow-card overflow-hidden"
               >
-                <div className={featured && mode !== "list" ? "grid lg:grid-cols-[1.05fr_.95fr]" : ""}>
-                  <div className="relative min-h-full border-b border-[var(--stroke)] lg:border-b-0 lg:border-r">
+                    <div className="relative border-b border-[var(--stroke)]">
                     <img
                       src={p.image ? assetUrl(p.image) : placeholderImg(p.title)}
                       alt={p.title}
-                      className="w-full aspect-[16/10] h-full object-cover"
+                        className="project-slider-image"
                       loading="lazy"
                     />
                     {p.category && (
-                      <span className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 text-xs font-bold text-white backdrop-blur">
+                        <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
                         {p.category}
                       </span>
                     )}
                   </div>
 
-                  <div className="p-5 md:p-6 flex flex-col">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="project-slider-body">
+                      <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h3 className="font-extrabold text-xl leading-tight">{p.title}</h3>
+                          <h3 className="project-slider-title">{p.title}</h3>
                         {p.date && <p className="mt-1 text-xs font-bold text-[color:var(--accent)]">{p.date}</p>}
                       </div>
                       {featured && (
-                        <span className="rounded-full border border-[var(--stroke)] px-3 py-1 text-xs font-bold text-[color:var(--text-soft)]">
+                          <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
                           Featured
                         </span>
                       )}
                     </div>
 
                     {description && (
-                      <p className="mt-3 text-[color:var(--text-soft)] text-sm leading-relaxed">{description}</p>
+                        <p className="project-slider-desc">{description}</p>
                     )}
 
                     {bullets.length > 1 && (
-                      <ul className="mt-4 grid gap-2 text-sm text-[color:var(--text-soft)]">
-                        {bullets.slice(1, 4).map((bullet) => (
+                        <ul className="mt-3 grid gap-1.5 text-xs text-[color:var(--text-soft)]">
+                          {bullets.slice(1, 3).map((bullet) => (
                           <li key={bullet} className="flex gap-2">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
+                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
                             <span>{bullet}</span>
                           </li>
                         ))}
@@ -865,8 +864,8 @@ const PortfolioSite = memo(function PortfolioSite() {
                     )}
 
                     {tools.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {tools.map((tool) => (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {tools.slice(0, 4).map((tool) => (
                           <span key={tool} className="chip text-xs font-bold">
                             {tool}
                           </span>
@@ -874,18 +873,18 @@ const PortfolioSite = memo(function PortfolioSite() {
                       </div>
                     )}
 
-                    <div className="mt-5 flex flex-wrap gap-2">
+                      <div className="mt-auto pt-4 flex flex-wrap gap-2">
                       {p.link && (
                         <button
-                          className="btn rounded-xl px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
+                            className="btn rounded-xl px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent2)] focus-ring"
                           onClick={() => openExternal(p.link)}
                         >
-                          View Project
+                          View
                         </button>
                       )}
                       {p.github && (
                         <button
-                          className="btn glass rounded-xl px-4 py-2 text-sm font-bold focus-ring"
+                            className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(p.github)}
                         >
                           GitHub
@@ -893,7 +892,7 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                       {p.report && (
                         <button
-                          className="btn glass rounded-xl px-4 py-2 text-sm font-bold focus-ring"
+                            className="btn glass rounded-xl px-3 py-2 text-xs font-bold focus-ring"
                           onClick={() => openExternal(assetUrl(p.report))}
                         >
                           Report
@@ -901,10 +900,11 @@ const PortfolioSite = memo(function PortfolioSite() {
                       )}
                     </div>
                   </div>
-                </div>
               </article>
             );
-          })}
+              })}
+            </div>
+          </div>
         </div>
       </Section>
     );
