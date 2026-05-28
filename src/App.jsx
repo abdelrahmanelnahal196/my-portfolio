@@ -842,26 +842,13 @@ const PortfolioSite = memo(function PortfolioSite() {
                   </a>
 
                   <div className="project-list-body min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="project-list-title">{p.title}</h3>
-                        {p.date && <p className="mt-1 text-xs font-bold text-[color:var(--accent)]">{p.date}</p>}
-                      </div>
-                      {featured && (
-                        <span className="rounded-full border border-[var(--stroke)] px-2 py-1 text-[11px] font-bold text-[color:var(--text-soft)]">
-                          Featured
-                        </span>
-                      )}
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      {p.category && <span className="text-xs font-bold text-[color:var(--accent)]">{p.category}</span>}
+                      {p.date && <span className="cert-meta mt-0">{p.date}</span>}
+                      {featured && <span className="cert-meta mt-0">Featured</span>}
                     </div>
 
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {p.category && <span className="chip text-xs font-bold">{p.category}</span>}
-                      {tools.slice(0, 3).map((tool) => (
-                        <span key={tool} className="chip text-xs font-bold">
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
+                    <h3 className="project-list-title">{p.title}</h3>
 
                     {description && <p className="project-list-desc">{description}</p>}
 
@@ -876,9 +863,19 @@ const PortfolioSite = memo(function PortfolioSite() {
                       </ul>
                     )}
 
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    {tools.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {tools.slice(0, 4).map((tool) => (
+                          <span key={tool} className="chip text-xs font-bold">
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-auto pt-4 flex flex-wrap gap-2">
                       <a
-                        className="inline-flex rounded-xl bg-white/10 border border-[var(--stroke)] px-3 py-2 text-xs font-bold text-[color:var(--accent)] focus-ring"
+                        className="inline-flex rounded-xl bg-white/10 border border-[var(--stroke)] px-3 py-2 text-sm font-bold text-[color:var(--accent)] focus-ring"
                         href={detailsHref}
                       >
                         View Details

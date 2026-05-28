@@ -197,7 +197,10 @@ select:focus-visible{
   .marquee-track,
   .float-slow, .float-mid, .float-fast,
   .drift-slow, .drift-mid, .drift-fast,
-  .fab { animation: none !important; }
+  .fab,
+  .contact-icon-box img,
+  .footer-icon img,
+  .fab img { animation: none !important; }
 }
 
 /* =========================================================
@@ -947,14 +950,15 @@ html:not(.dark) .tool-card {
 
 .project-list-thumb {
   width: 100%;
-  height: 150px;
+  aspect-ratio: 16 / 10;
+  height: auto;
 }
 
 .project-list-body {
   display: flex;
-  min-height: 270px;
+  min-height: 300px;
   flex-direction: column;
-  padding: 16px;
+  padding: 14px 14px 16px;
 }
 
 .project-list-title {
@@ -976,7 +980,7 @@ html:not(.dark) .tool-card {
 
 @media (max-width: 640px) {
   .project-list-thumb {
-    height: 150px;
+    aspect-ratio: 16 / 9;
   }
 }
 
@@ -998,6 +1002,8 @@ html.dark .contact-icon-box { box-shadow: 0 18px 55px rgba(0,0,0,.35); }
   height: 30px;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
+  transform-origin: center;
+  animation: socialLogoFloat 3.2s ease-in-out infinite;
 }
 
 .contact-icon-box,
@@ -1028,7 +1034,7 @@ html.dark .contact-icon-box { box-shadow: 0 18px 55px rgba(0,0,0,.35); }
     padding: 10px 6px;
   }
 
-  .contact-card:hover {
+.contact-card:hover {
     transform: translateY(-2px);
   }
 
@@ -1122,6 +1128,8 @@ html.dark .contact-icon-box { box-shadow: 0 18px 55px rgba(0,0,0,.35); }
   width: 28px;
   height: 28px;
   object-fit: contain;
+  transform-origin: center;
+  animation: socialLogoFloat 3.2s ease-in-out infinite;
 }
 
 .fab:hover {
@@ -1130,6 +1138,23 @@ html.dark .contact-icon-box { box-shadow: 0 18px 55px rgba(0,0,0,.35); }
   box-shadow:
     0 22px 40px color-mix(in srgb, var(--accent) 70%, transparent),
     0 0 22px 8px color-mix(in srgb, var(--accent2) 60%, transparent);
+}
+
+.contact-card:hover .contact-icon-box img,
+.footer-icon:hover img,
+.fab:hover img {
+  animation: socialLogoPop 520ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes socialLogoFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-3px) rotate(-3deg) scale(1.05); }
+}
+
+@keyframes socialLogoPop {
+  0% { transform: scale(1) rotate(0deg); }
+  45% { transform: scale(1.22) rotate(8deg); }
+  100% { transform: scale(1.04) rotate(0deg); }
 }
 
 /* =========================================================
